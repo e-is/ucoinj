@@ -1,0 +1,43 @@
+@CHARSET "UTF-8";
+/*
+body {
+  padding: 0px;
+  margin: 0px;
+  margin-top: 0px;
+}
+
+div.content {
+  position: fixed;
+  overflow: auto;
+  left: 0px;
+  top : 0px
+  right: 0px;
+  bottom: 0px;
+  border: 0;
+  border-left-style: none;
+  padding-left: 10px;
+}
+
+div.content div.contentWrap {
+  min-height: 100%;
+}
+
+div.content div.contentMain {
+  overflow: auto;
+  padding-bottom: 55px;
+}
+
+div.content div.contentPush {
+  height: 55px;
+}
+
+div.content div.contentFooter {
+  position: relative;
+  margin-top: -55px;
+  height: 54px;
+  clear: both;
+  text-align: center;
+  font-size: smaller;
+  border-top: 1px lightgray dotted;
+}*/
+

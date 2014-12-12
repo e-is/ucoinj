@@ -5,7 +5,7 @@
 		<version>1.1-SNAPSHOT</version> </parent -->
 
   <groupId>io.ucoin</groupId>
-  <artifactId>ucoin-client</artifactId>
+  <artifactId>ucoinj</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>UCoin Java Client</name>
@@ -59,12 +59,12 @@
 
   <inceptionYear>2014</inceptionYear>
 
-  <!-- SVN repository  -
+  <!-- SVN repository -->
   <scm>
-	<url>https://forge.ifremer.fr/svn/sih-adagio/trunk/adagio-extractor/</url>
-	<connection>scm:svn:https://forge.ifremer.fr/svn/sih-adagio/trunk/adagio-extractor/</connection>
-    <developerConnection>scm:svn:https://forge.ifremer.fr/svn/sih-adagio/trunk/adagio-extractor/</developerConnection>
-  </scm>-->
+	<url>https://github.com/blavenie/ucoinj/</url>
+	<connection>scm:svn:https://github.com/blavenie/ucoinj/</connection>
+    <developerConnection>scm:svn:https://github.com/blavenie/ucoinj/</developerConnection>
+  </scm>
   
   <profiles>
 
@@ -420,7 +420,7 @@
   <repositories>
     <repository>
       <id>adagio-public-group</id>
-      <url>http://nexus.e-is.pro/nexus/content/groups/sih-adagio</url>
+      <url>http://nexus.e-is.pro/nexus/content/groups/ucoinj</url>
       <snapshots>
         <enabled>true</enabled>
         <checksumPolicy>fail</checksumPolicy>
@@ -445,19 +445,19 @@
     <repository>
       <id>eis-nexus-deploy</id>
       <url>
-		http://nexus.e-is.pro/nexus/content/repositories/sih-adagio-releases
+		http://nexus.e-is.pro/nexus/content/repositories/ucoinj-releases
 	  </url>
     </repository>
     <snapshotRepository>
       <id>eis-nexus-deploy</id>
       <url>
-		 http://nexus.e-is.pro/nexus/content/repositories/sih-adagio-snapshots
+		 http://nexus.e-is.pro/nexus/content/repositories/ucoinj-snapshots
 	  </url>
     </snapshotRepository>
   </distributionManagement>
 
   <modules>
-    <module>core</module>
-    <module>ui</module>
+    <module>ucoinj-core</module>
+<!--     <module>ucoinj-web</module> -->
   </modules>
 </project>
