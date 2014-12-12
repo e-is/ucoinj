@@ -1,8 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-	<!--parent> <groupId>fr.ifremer</groupId> <artifactId>common</artifactId> 
-		<version>1.1-SNAPSHOT</version> </parent -->
+  <!--parent> <groupId>fr.ifremer</groupId> <artifactId>common</artifactId> <version>1.1-SNAPSHOT</version> </parent -->
 
   <groupId>io.ucoin</groupId>
   <artifactId>ucoinj</artifactId>
@@ -11,12 +10,13 @@
   <name>UCoin Java Client</name>
 
   <properties>
-
-	<!-- UCoin version -->
-	<ucoin.version></ucoin.version>
-    
-	<!-- Commons versions -->
+    <!-- source file encoding -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- UCoin version -->
+    <ucoin.version>0.9.7</ucoin.version>
+
+    <!-- Commons versions -->
     <file.encoding>UTF-8</file.encoding>
     <log4j.version>1.2.16</log4j.version>
     <slf4j.version>1.7.5</slf4j.version>
@@ -24,148 +24,73 @@
     <xalan.version>2.7.1</xalan.version>
     <xerces.version>2.9.0</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
-	<gson.version>2.2.2</gson.version>
-	
-	<!-- UI versions -->	
+    <gson.version>2.2.2</gson.version>
+
+    <nuitonConfigVersion>3.0-rc-2</nuitonConfigVersion>
+    <nuitonI18nVersion>3.3</nuitonI18nVersion>
+
+    <!-- UI versions -->
     <wicket.version>6.14.0</wicket.version>
     <jquery-ui.version>6.14.0</jquery-ui.version>
-    
+
     <yuicompressor-maven-plugin.version>1.3.0</yuicompressor-maven-plugin.version>
     <htmlcompressor-maven-plugin.version>1.3</htmlcompressor-maven-plugin.version>
     <servlet-api.version>2.5</servlet-api.version>
 
-	<!-- Unit test -->
-    <junit.version>4.8.1</junit.version>
+    <!-- Unit test -->
+    <junit.version>4.12</junit.version>
     <jetty.version>9.0.4.v20130625</jetty.version>
 
-	<!-- IDE & Development process -->
+    <!-- IDE & Development process -->
     <maven-eclipse-plugin.version>2.9</maven-eclipse-plugin.version>
 
     <!--license-maven-plugin config -->
-    <maven.license.file>${project.basedir}/LICENSE.txt</maven.license.file>
+    <maven.license.file>${project.basedir}/LICENSE</maven.license.file>
     <license.useMissingFile>true</license.useMissingFile>
     <license.failIfWarning>true</license.failIfWarning>
     <license.organizationName>EIS</license.organizationName>
-    <license.licenseName>agpl_v3</license.licenseName>
+    <license.licenseName>gpl_v3</license.licenseName>
+
+    <!-- release config -->
+    <autoVersionSubmodules>true</autoVersionSubmodules>
+    <goals>deploy</goals>
+    <arguments></arguments>
+    <preparationGoals>verify</preparationGoals>
+
+    <locales>en,fr</locales>
+
+    <!-- I18n configuration -->
+    <i18n.bundles>fr_FR,en_GB</i18n.bundles>
+    <i18n.silent>true</i18n.silent>
+    
+    <!-- by default, use maven 2 source base dir -->
+    <maven.src.dir>${basedir}/src</maven.src.dir>
+
+    <!-- where to generate sources -->
+    <maven.gen.dir>${project.build.directory}/generated-sources</maven.gen.dir>
+
   </properties>
 
   <licenses>
     <license>
-      <name>Affero General Public License (AGPL)</name>
-      <url>http://www.gnu.org/licenses/agpl.txt</url>
+      <name>General Public License (GPL) v3</name>
+      <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
 
   <inceptionYear>2014</inceptionYear>
 
-  <!-- SVN repository -->
+  <modules>
+    <module>ucoinj-core</module>
+    <!-- <module>ucoinj-web</module> -->
+  </modules>
+
   <scm>
-	<url>https://github.com/blavenie/ucoinj/</url>
-	<connection>scm:svn:https://github.com/blavenie/ucoinj/</connection>
+    <url>https://github.com/blavenie/ucoinj/</url>
+    <connection>scm:svn:https://github.com/blavenie/ucoinj/</connection>
     <developerConnection>scm:svn:https://github.com/blavenie/ucoinj/</developerConnection>
   </scm>
-  
-  <profiles>
-
-    <!-- perform only on a release stage when using the maven-release-plugin -->
-    <profile>
-      <id>license-profile</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <defaultGoal>generate-resources</defaultGoal>
-        <plugins>
-          <!-- add license and third-party files to build -->
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>attach-licenses</id>
-                <goals>
-                  <goal>update-project-license</goal>
-                  <goal>add-third-party</goal>
-                </goals>
-                <configuration>
-                  <licenseMerges>
-                    <licenseMerge>
-                      The Apache Software License, Version 2.0|Apache License, Version 2.0|Apache License V2.0|Apache 2|ASF
-                      2.0|apache-2.0|Apache Public License 2.0
-                    </licenseMerge>
-                    <licenseMerge>BSD License|BSD license|BSD</licenseMerge>
-                    <licenseMerge>MIT License|MIT license|MIT</licenseMerge>
-                    <licenseMerge>
-                      Lesser General Public License (LPGL) v 2.1|GNU Lesser General Public License, 2.1|LGPL 2.1
-                    </licenseMerge>
-                    <licenseMerge>
-                      Lesser General Public License (LPGL)|GNU Lesser General Public License|GNU LESSER GENERAL PUBLIC LICENSE|LGPL|lgpl
-                    </licenseMerge>
-                    <licenseMerge>
-                      COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0|Common Development and Distribution License (CDDL)
-                      v1.0
-                    </licenseMerge>
-                    <licenseMerge>Indiana University Extreme! Lab Software License, vesion 1.1.1|Indiana University Extreme! Lab Software License</licenseMerge>
-                  </licenseMerges>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-
-    <!-- This profile update license stuff with new goal update-file-header -->
-    <profile>
-      <id>update-file-header</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <defaultGoal>process-resources</defaultGoal>
-        <plugins>
-          <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>license-maven-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>update-file-header</id>
-                <goals>
-                  <goal>update-file-header</goal>
-                </goals>
-                <configuration>
-                  <addSvnKeyWords>false</addSvnKeyWords>
-                  <excludes>
-                    <exclude>**/site/**/*.*</exclude>
-                    <exclude>**/misc/**/*.*</exclude>
-                    <exclude>**/webapp/jquery/**/*.*</exclude>
-                    <exclude>**/webapp/META-INF/**/*.*</exclude>
-                    <exclude>**/webapp/WEB-INF/**/*.*</exclude>
-                    <exclude>**/*.properties</exclude>
-                    <exclude>**/*.xml</exclude>
-                    <exclude>**/jquery.tokeninput.js</exclude>
-                    <exclude>**/jquery.watermark.js</exclude>
-                    <exclude>**/jquery.qtip.*</exclude>
-                    <!-- since sh scripts must begins by the line #!/bin/sh,
-                         can not use the mojo for the mojo -->
-                    <exclude>**/*.sh</exclude>
-                  </excludes>
-                </configuration>
-                <phase>process-resources</phase>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 
   <dependencyManagement>
     <dependencies>
@@ -193,7 +118,7 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>3.1</version>
-      </dependency>	  
+      </dependency>
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
@@ -213,6 +138,16 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>1.8.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuiton</groupId>
+        <artifactId>nuiton-config</artifactId>
+        <version>${nuitonConfigVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.nuiton.i18n</groupId>
+        <artifactId>nuiton-i18n</artifactId>
+        <version>${nuitonI18nVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.wicket</groupId>
@@ -248,7 +183,7 @@
         <groupId>org.apache.wicket</groupId>
         <artifactId>wicket-spring-annot</artifactId>
         <version>1.3.7</version>
-      </dependency>	  
+      </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
         <artifactId>httpcore</artifactId>
@@ -316,6 +251,13 @@
   <build>
     <pluginManagement>
       <plugins>
+
+        <plugin>
+          <groupId>org.nuiton.i18n</groupId>
+          <artifactId>i18n-maven-plugin</artifactId>
+          <version>${nuitonI18nVersion}</version>
+        </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-eclipse-plugin</artifactId>
@@ -337,7 +279,7 @@
           <artifactId>jetty-maven-plugin</artifactId>
           <version>${jetty.version}</version>
           <configuration>
-            
+
           </configuration>
         </plugin>
 
@@ -361,7 +303,7 @@
 
         <plugin>
           <artifactId>maven-source-plugin</artifactId>
-            <version>2.2.1</version>
+          <version>2.2.1</version>
         </plugin>
 
         <plugin>
@@ -384,7 +326,7 @@
 
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-<!--           <version>3.0</version> -->
+          <!-- <version>3.0</version> -->
           <configuration>
             <source>1.7</source>
             <target>1.7</target>
@@ -396,12 +338,12 @@
 
         <plugin>
           <artifactId>maven-resources-plugin</artifactId>
-<!--           <version>2.6</version> -->
+          <!-- <version>2.6</version> -->
           <configuration>
             <escapeString>\</escapeString>
           </configuration>
         </plugin>
-        
+
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.2</version>
@@ -415,25 +357,13 @@
       </plugins>
     </pluginManagement>
   </build>
-  
-  <!-- Repositories needed to find the dependencies 
-  <repositories>
-    <repository>
-      <id>adagio-public-group</id>
-      <url>http://nexus.e-is.pro/nexus/content/groups/ucoinj</url>
-      <snapshots>
-        <enabled>true</enabled>
-        <checksumPolicy>fail</checksumPolicy>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <checksumPolicy>fail</checksumPolicy>
-      </releases>
-    </repository>
-  </repositories>-->
+
+  <!-- Repositories needed to find the dependencies <repositories> <repository> <id>adagio-public-group</id> <url>http://nexus.e-is.pro/nexus/content/groups/ucoinj</url> 
+    <snapshots> <enabled>true</enabled> <checksumPolicy>fail</checksumPolicy> </snapshots> <releases> <enabled>true</enabled> <checksumPolicy>fail</checksumPolicy> </releases> 
+    </repository> </repositories> -->
 
   <pluginRepositories>
-	<!-- Need for javascript minify maven plugin (yuicompressor-maven-plugin) -->
+    <!-- Need for javascript minify maven plugin (yuicompressor-maven-plugin) -->
     <pluginRepository>
       <name>oss.sonatype.org</name>
       <id>oss.sonatype.org</id>
@@ -456,8 +386,215 @@
     </snapshotRepository>
   </distributionManagement>
 
-  <modules>
-    <module>ucoinj-core</module>
-<!--     <module>ucoinj-web</module> -->
-  </modules>
+  <profiles>
+    <!-- perform only on a release stage when using the maven-release-plugin -->
+    <profile>
+      <id>license-profile</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <defaultGoal>generate-resources</defaultGoal>
+        <plugins>
+          <!-- add license and third-party files to build -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-licenses</id>
+                <goals>
+                  <goal>update-project-license</goal>
+                  <goal>add-third-party</goal>
+                </goals>
+                <configuration>
+                  <licenseMerges>
+                    <licenseMerge>
+                      The Apache Software License, Version 2.0|Apache License, Version 2.0|Apache License V2.0|Apache 2|ASF
+                      2.0|apache-2.0|Apache
+                      Public License 2.0
+                    </licenseMerge>
+                    <licenseMerge>BSD License|BSD license|BSD</licenseMerge>
+                    <licenseMerge>MIT License|MIT license|MIT</licenseMerge>
+                    <licenseMerge>
+                      Lesser General Public License (LPGL) v 2.1|GNU Lesser General Public License, 2.1|LGPL 2.1
+                    </licenseMerge>
+                    <licenseMerge>
+                      Lesser General Public License (LPGL)|GNU Lesser General Public License|GNU LESSER GENERAL PUBLIC LICENSE|LGPL|lgpl
+                    </licenseMerge>
+                    <licenseMerge>
+                      COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0|Common Development and Distribution License (CDDL)
+                      v1.0
+                    </licenseMerge>
+                    <licenseMerge>Indiana University Extreme! Lab Software License, vesion 1.1.1|Indiana University Extreme! Lab Software License</licenseMerge>
+                  </licenseMerges>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- This profile update license stuff with new goal update-file-header -->
+    <profile>
+      <id>update-file-header</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <defaultGoal>process-resources</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>update-file-header</id>
+                <goals>
+                  <goal>update-file-header</goal>
+                </goals>
+                <configuration>
+                  <addSvnKeyWords>false</addSvnKeyWords>
+                  <excludes>
+                    <exclude>**/site/**/*.*</exclude>
+                    <exclude>**/misc/**/*.*</exclude>
+                    <exclude>**/webapp/jquery/**/*.*</exclude>
+                    <exclude>**/webapp/META-INF/**/*.*</exclude>
+                    <exclude>**/webapp/WEB-INF/**/*.*</exclude>
+                    <exclude>**/*.properties</exclude>
+                    <exclude>**/*.xml</exclude>
+                    <exclude>**/jquery.tokeninput.js</exclude>
+                    <exclude>**/jquery.watermark.js</exclude>
+                    <exclude>**/jquery.qtip.*</exclude>
+                    <!-- since sh scripts must begins by the line #!/bin/sh, can not use the mojo for the mojo -->
+                    <exclude>**/*.sh</exclude>
+                  </excludes>
+                </configuration>
+                <phase>process-resources</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>reporting</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-changes-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-changes</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>changes-check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+      <reporting>
+        <plugins>
+          <plugin>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>${projectInfoReportsPluginVersion}</version>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>project-team</report>
+                  <report>mailing-list</report>
+                  <report>cim</report>
+                  <report>issue-tracking</report>
+                  <report>license</report>
+                  <report>scm</report>
+                  <report>dependencies</report>
+                  <report>dependency-convergence</report>
+                  <report>dependency-info</report>
+                  <report>plugin-management</report>
+                  <report>plugins</report>
+                  <report>dependency-management</report>
+                  <report>summary</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-changelog-plugin</artifactId>
+            <!-- FIXME BL : waiting capturing group to be enable (see https://jira.codehaus.org/browse/MCHANGELOG-125) <configuration> <issueLinkUrl>https://forge.ifremer.fr/mantis/view.php?id=%ISSUE%</issueLinkUrl> 
+              <issueIDRegexPattern>[#]([0-9]{4,})</issueIDRegexPattern> </configuration> -->
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-changes-plugin</artifactId>
+            <configuration>
+              <aggregated>true</aggregated>
+              <escapeHTML>false</escapeHTML>
+              <feedType>rss_2.0</feedType>
+              <issueLinkTemplatePerSystem>
+                <default>https://github.com/blavenie/ucoinj/issues/%ISSUE%</default>
+              </issueLinkTemplatePerSystem>
+            </configuration>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <version>2.1</version>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>dependency-updates-report</report>
+                  <report>plugin-updates-report</report>
+                  <report>property-updates-report</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+          </plugin>
+
+          <plugin>
+            <groupId>org.nuiton</groupId>
+            <artifactId>nuiton-maven-report-plugin</artifactId>
+            <version>3.0</version>
+            <inherited>false</inherited>
+            <reportSets>
+              <reportSet>
+                <reports>
+                  <report>aggregate-config-report</report>
+                </reports>
+              </reportSet>
+            </reportSets>
+            <configuration>
+              <i18nBundleName>ucoinj-i18n</i18nBundleName>
+              <verbose>true</verbose>
+              <showOptionDetail>true</showOptionDetail>
+              <outputEncoding>UTF-8</outputEncoding>
+            </configuration>
+          </plugin>
+        </plugins>
+      </reporting>
+
+    </profile>
+  </profiles>
 </project>

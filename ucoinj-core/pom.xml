@@ -12,6 +12,20 @@
   <packaging>jar</packaging>
   <name>UCoin Java Client :: Core API</name>
 
+
+  <properties>
+    <i18n.bundleOutputName>ucoinj-core-i18n</i18n.bundleOutputName>
+    <i18n.generateCsvFile>true</i18n.generateCsvFile>
+    <i18n.bundleCsvFile>
+      ${maven.gen.dir}/resources/META-INF/${i18n.bundleOutputName}.csv
+    </i18n.bundleCsvFile>
+    <config.i18nBundleName>${i18n.bundleOutputName}</config.i18nBundleName>
+
+    <maven.jar.main.class>
+      io.ucoin.client.core.UCoinClientCore
+    </maven.jar.main.class>
+
+  </properties>
   <dependencies>
     <dependency>
       <groupId>log4j</groupId>
@@ -57,6 +71,14 @@
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuiton</groupId>
+      <artifactId>nuiton-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuiton.i18n</groupId>
+      <artifactId>nuiton-i18n</artifactId>
+    </dependency>
 
     <!-- Unit test -->
 
@@ -66,4 +88,41 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuiton.i18n</groupId>
+        <artifactId>i18n-maven-plugin</artifactId>
+
+        <executions>
+          <execution>
+            <id>scan-sources</id>
+            <configuration>
+              <entries>
+                <entry>
+                  <specificGoal>parserValidation</specificGoal>
+                  <basedir>${maven.src.dir}/main/java/</basedir>
+                  <includes>
+                    <param>**/**-validation.xml</param>
+                  </includes>
+                </entry>
+              </entries>
+            </configuration>
+            <goals>
+              <goal>parserJava</goal>
+              <goal>parserValidation</goal>
+              <goal>gen</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>make-bundle</id>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

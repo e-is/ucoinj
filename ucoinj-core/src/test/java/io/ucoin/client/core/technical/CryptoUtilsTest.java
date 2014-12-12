@@ -1,16 +1,16 @@
 package io.ucoin.client.core.technical;
 
-import io.ucoin.client.core.TestConfig;
+import io.ucoin.client.core.TestResource;
 import io.ucoin.client.core.technical.crypto.nacl.NaCl;
 import io.ucoin.client.core.technical.crypto.nacl.curve25519xsalsa20poly1305;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 
-import junit.framework.Assert;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,25 +20,21 @@ import com.lambdaworks.crypto.SCrypt;
 public class CryptoUtilsTest {
 
     private static final Log log = LogFactory.getLog(CryptoUtilsTest.class);
+    @ClassRule
+    public static final TestResource resource = TestResource.create();
     
     public static int SEED_LENGTH = 32; // Length of the key
     public static int crypto_sign_BYTES = 64;
     
-    static final int crypto_secretbox_KEYBYTES = 32;
-    static final int crypto_secretbox_NONCEBYTES = 24;
-    static final int crypto_secretbox_ZEROBYTES = 32;
-    static final int crypto_secretbox_BOXZEROBYTES = 16;
-    static final int crypto_secretbox_BEFORENMBYTES = 32;
-    
-    private byte[] precomputed = new byte[crypto_secretbox_BEFORENMBYTES];
+    private byte[] precomputed = new byte[curve25519xsalsa20poly1305.crypto_secretbox_BEFORENMBYTES];
     
     @Test
     @Ignore  
     // FIXME BLA : should be implemented using Kalium (but works only on Linux OS ?) 
     public void testScrypt() throws UnsupportedEncodingException, GeneralSecurityException {
 
-        String salt = TestConfig.getKeySalt();
-        String password = TestConfig.getKeyPassword();
+        String salt = resource.getFixtures().getKeySalt();
+        String password = resource.getFixtures().getKeyPassword();
         
         byte[] P, S;
         int N, r, p, dkLen;
@@ -46,8 +42,8 @@ public class CryptoUtilsTest {
 
         // empty key & salt test missing because unsupported by JCE
 
-        S = TestConfig.getKeySalt().getBytes("UTF-8");
-        P = TestConfig.getKeyPassword().getBytes("UTF-8");
+        S = resource.getFixtures().getKeySalt().getBytes("UTF-8");
+        P = resource.getFixtures().getKeyPassword().getBytes("UTF-8");
         N = 4096;
         r = 16;
         p = 1;
@@ -55,32 +51,25 @@ public class CryptoUtilsTest {
 
         byte[] chain = SCrypt.scrypt(P, S, N, r, p, SEED_LENGTH);
         String hash = new String(Base64.encode(chain));
-        System.out.println(hash);
+        System.out.println("Scrypt return: " + hash);
         
         byte[] nonce = new byte[32];
         byte[] input = NaCl.getBinary(hash);
-        byte[] paddedinput = new byte[input.length + crypto_secretbox_ZEROBYTES];
-        byte[] output = new byte[input.length + crypto_secretbox_ZEROBYTES];
+        byte[] paddedinput = new byte[input.length + curve25519xsalsa20poly1305.crypto_secretbox_ZEROBYTES];
+        byte[] output = new byte[input.length + curve25519xsalsa20poly1305.crypto_secretbox_ZEROBYTES];
         
-        System.arraycopy(input, 0, paddedinput, crypto_secretbox_ZEROBYTES, input.length);
+        System.arraycopy(input, 0, paddedinput, curve25519xsalsa20poly1305.crypto_secretbox_ZEROBYTES, input.length);
 
         curve25519xsalsa20poly1305.crypto_box_afternm(output, paddedinput, paddedinput.length, nonce, this.precomputed);
         
+        curve25519xsalsa20poly1305.crypto_box_getpublickey(output, chain);
+        
         char[] resultKey = Base64.encode(output);
-        System.out.println(resultKey);
+        System.out.println("Expected public key:" + new String(resource.getFixtures().getExpectedPublicKey()));
+        System.out.println("Result is: " + new String(resultKey));
         
-        // TODO BLA : fixe this
-        Assert.assertEquals(TestConfig.getExpectedPublicKey(), new String(resultKey));
-        //.crypto_sign_ed25519_seed_keypair();
-        
-        
-//        String enc = SCryptUtil.scrypt("neb", N, r, p);
-//        System.out.println(enc);
-        
-//        Mac mac = Mac.getInstance("ed");
-//        mac.init(new SecretKeySpec(passwd, "HmacSHA256"));
-        //assertArrayEquals(CryptoTestUtil.decode(DK), chain);
+        // TODO BLA : fix this
+        Assert.assertEquals(resource.getFixtures().getExpectedPublicKey(), new String(resultKey));
         
     }
-
 }

@@ -14,8 +14,8 @@ public class BlockchainService extends AbstractService{
 
     
     
-    public BlockchainService(String nodeURL) {
-        super(nodeURL);
+    public BlockchainService() {
+        super();
     }
     
     /**

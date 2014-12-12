@@ -1,6 +1,7 @@
 package io.ucoin.client.core.service;
 
-import io.ucoin.client.core.technical.UCoinTechnicalExecption;
+import io.ucoin.client.core.config.Configuration;
+import io.ucoin.client.core.technical.UCoinTechnicalException;
 import io.ucoin.client.core.technical.gson.GsonUtils;
 
 import java.io.Closeable;
@@ -9,10 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.ConnectException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -39,41 +38,42 @@ public abstract class AbstractService implements Closeable {
     protected URI baseUri;
     protected Integer baseTimeOut;
     protected final Gson gson;
-    protected final CloseableHttpClient httpClient; 
-    
-    public AbstractService(String nodeURL) {
+    protected final CloseableHttpClient httpClient;
+
+    public AbstractService() {
         super();
+        Configuration config = Configuration.instance();
+
         this.gson = GsonUtils.newBuilder().create();
-        this.baseTimeOut = 1500;
-        this.httpClient = initHttpClient();
-        this.baseUri = initNodeURI(nodeURL);
+        this.baseTimeOut = config.getNodeTimeout();
+        this.httpClient = initHttpClient(config);
+        this.baseUri = initNodeURI(config);
     }
 
     @Override
     public void close() throws IOException {
         httpClient.close();
     }
-    
+
     /* -- Internal methods -- */
 
-    protected CloseableHttpClient initHttpClient() {
+    protected CloseableHttpClient initHttpClient(Configuration config) {
         CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(getRequestConfig())
-            //.setDefaultCredentialsProvider(getCredentialsProvider())
-            .build();
+                // .setDefaultCredentialsProvider(getCredentialsProvider())
+                .build();
         return httpClient;
     }
-    
-    protected URI initNodeURI(String nodeUrl) {
+
+    protected URI initNodeURI(Configuration config) {
         try {
-            URL baseUrl = new URL(nodeUrl);
-            return baseUrl.toURI();
+            URI nodeURI = config.getNodeUrl().toURI(); 
+        
+            return nodeURI;
         } catch (URISyntaxException ex) {
-            throw new UCoinTechnicalExecption(ex);
-        } catch (MalformedURLException e) {
-            throw new UCoinTechnicalExecption(e);
-        }
+            throw new UCoinTechnicalException(ex);
+        } 
     }
-    
+
     protected URI getAppendedPath(String... path) throws URISyntaxException {
         String pathToAppend = Joiner.on('/').skipNulls().join(path);
 
@@ -83,10 +83,10 @@ public abstract class AbstractService implements Closeable {
     }
 
     protected RequestConfig getRequestConfig() {
-        // build request config for timeout 
+        // build request config for timeout
         return RequestConfig.custom().setSocketTimeout(baseTimeOut).setConnectTimeout(baseTimeOut).build();
     }
-    
+
     @SuppressWarnings("unchecked")
     protected <T> T executeRequest(HttpUriRequest request, Class<? extends T> resultClass) throws IOException {
         Preconditions.checkNotNull(httpClient);
@@ -104,22 +104,22 @@ public abstract class AbstractService implements Closeable {
                 }
 
                 switch (response.getStatusLine().getStatusCode()) {
-                    case HttpStatus.SC_OK: {
-                        result = (T)parseResponse(response, resultClass);
+                case HttpStatus.SC_OK: {
+                    result = (T) parseResponse(response, resultClass);
 
-                        EntityUtils.consume(response.getEntity());
-                        break;
-                    }
-                    case HttpStatus.SC_UNAUTHORIZED:
-                    case HttpStatus.SC_FORBIDDEN:
-                        throw new UCoinTechnicalExecption("ucoin.client.authentication");
-                    default:
-                        throw new UCoinTechnicalExecption("ucoin.client.status" +  response.getStatusLine().toString());
+                    EntityUtils.consume(response.getEntity());
+                    break;
+                }
+                case HttpStatus.SC_UNAUTHORIZED:
+                case HttpStatus.SC_FORBIDDEN:
+                    throw new UCoinTechnicalException("ucoin.client.authentication");
+                default:
+                    throw new UCoinTechnicalException("ucoin.client.status" + response.getStatusLine().toString());
                 }
 
             }
         } catch (ConnectException e) {
-            throw new UCoinTechnicalExecption("ucoin.client.core.connect", e);
+            throw new UCoinTechnicalException("ucoin.client.core.connect", e);
         }
 
         return result;
@@ -133,13 +133,13 @@ public abstract class AbstractService implements Closeable {
         }
 
         if (result == null) {
-            throw new UCoinTechnicalExecption("ucoin.client.core.emptyResponse");
+            throw new UCoinTechnicalException("ucoin.client.core.emptyResponse");
         }
 
         if (log.isDebugEnabled()) {
             log.debug("response: " + ToStringBuilder.reflectionToString(result, ToStringStyle.SHORT_PREFIX_STYLE));
         }
-        
+
         return result;
     }
 }

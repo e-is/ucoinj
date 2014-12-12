@@ -3,7 +3,7 @@ package io.ucoin.client.core.service;
 import io.ucoin.client.core.model.WotLookupResult;
 import io.ucoin.client.core.model.WotLookupResults;
 import io.ucoin.client.core.model.WotLookupUId;
-import io.ucoin.client.core.technical.UCoinTechnicalExecption;
+import io.ucoin.client.core.technical.UCoinTechnicalException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.logging.Log;
@@ -14,8 +14,8 @@ public class WotService extends AbstractService {
 
     private static final Log log = LogFactory.getLog(WotService.class);
 
-    public WotService(String nodeURL) {
-        super(nodeURL);
+    public WotService() {
+        super();
     }
 
     public WotLookupResults find(String uidPattern) throws Exception {
@@ -44,7 +44,7 @@ public class WotService extends AbstractService {
 
         WotLookupUId uniqueResult = getUid(lookupResults, uid);
         if (uniqueResult == null) {
-            throw new UCoinTechnicalExecption("User not found, with uid=" + uid);
+            throw new UCoinTechnicalException("User not found, with uid=" + uid);
         }
         
         return uniqueResult;

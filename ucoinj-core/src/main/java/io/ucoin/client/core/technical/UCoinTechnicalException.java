@@ -6,27 +6,27 @@ package io.ucoin.client.core.technical;
  * @since 
  *
  */
-public class UCoinTechnicalExecption extends RuntimeException{
+public class UCoinTechnicalException extends RuntimeException{
 
     private static final long serialVersionUID = -6715624222174163366L;
 
-    public UCoinTechnicalExecption() {
+    public UCoinTechnicalException() {
         super();
     }
 
-    public UCoinTechnicalExecption(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public UCoinTechnicalException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public UCoinTechnicalExecption(String message, Throwable cause) {
+    public UCoinTechnicalException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public UCoinTechnicalExecption(String message) {
+    public UCoinTechnicalException(String message) {
         super(message);
     }
 
-    public UCoinTechnicalExecption(Throwable cause) {
+    public UCoinTechnicalException(Throwable cause) {
         super(cause);
     }
     

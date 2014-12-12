@@ -1,28 +1,33 @@
 package io.ucoin.client.core;
 
-public class TestConfig {
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
-    public static String getNodeUrl() {
+public class TestFixtures {
+
+    public String getNodeUrl() {
         return "http://twiced.fr:9101";
     }
-    
-    public static String getUid() {
+
+    public String getUid() {
         return "cgeek";
     }
-    
-    public static String getKeySalt() {
+
+    public String getKeySalt() {
         return "a salt string";
     }
-    
-    public static String getKeyPassword() {
+
+    public String getKeyPassword() {
         return "a password string";
     }
 
     /**
      * Th expected public key generated from getKeySalt() and getKeyPassword()
+     * 
      * @return
      */
-    public static String getExpectedPublicKey() {
+    public String getExpectedPublicKey() {
         return "FedYyZ64tvNj7Z7dw2gt5Hssayr9o8t8wPvi16jWAxqY";
     }
 }
