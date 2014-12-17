@@ -1,31 +1,15 @@
 package io.ucoin.client.core.model;
 
-public class Identity {
+public class Identity extends BasicIdentity {
 
-    private String pubkey;
+    private static final long serialVersionUID = -7451079677730158794L;
 
-    private String signature;
+    private int timestamp = -1;
 
-    private int timestamp;
-
-    private String uid;
-
-    public String getPubkey() {
-        return pubkey;
-    }
-
-    public void setPubkey(String pubkey) {
-        this.pubkey = pubkey;
-    }
-
-    public String getSignature() {
-        return signature;
-    }
-
-    public void setSignature(String signature) {
-        this.signature = signature;
-    }
-
+    /**
+     * The timestamp value of the signature date
+     * @return
+     */
     public int getTimestamp() {
         return timestamp;
     }
@@ -34,11 +18,4 @@ public class Identity {
         this.timestamp = timestamp;
     }
 
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
 }

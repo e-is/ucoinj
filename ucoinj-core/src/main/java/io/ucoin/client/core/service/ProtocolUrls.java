@@ -19,6 +19,9 @@ public interface ProtocolUrls {
     
     public static final String WOT_LOOKUP = WOT_BASE + "/lookup/%s";
     
+    public static final String WOT_CERTIFIED_BY = WOT_BASE + "/certified-by/%s";
     
+    public static final String WOT_CERTIFIERS_OF = WOT_BASE + "/certifiers-of/%s";
+   
     
 }

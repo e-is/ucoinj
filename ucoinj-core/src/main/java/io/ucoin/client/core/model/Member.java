@@ -2,6 +2,8 @@ package io.ucoin.client.core.model;
 
 public class Member extends Identity{
 
+    private static final long serialVersionUID = 8448049949323699700L;
+
     private String number;
 
     private String hash;

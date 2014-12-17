@@ -3,7 +3,7 @@ package io.ucoin.client.core.service;
 import io.ucoin.client.core.TestResource;
 import io.ucoin.client.core.model.BlockchainBlock;
 import io.ucoin.client.core.model.BlockchainParameter;
-import io.ucoin.client.core.model.Identity;
+import io.ucoin.client.core.model.BasicIdentity;
 import io.ucoin.client.core.model.Member;
 
 import org.apache.commons.logging.Log;
@@ -44,7 +44,7 @@ public class BlockchainServiceTest {
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getCurrency());
         
-        for (Identity id: result.getIdentities()) {
+        for (BasicIdentity id: result.getIdentities()) {
             Assert.assertNotNull(id.getUid());
         }
         

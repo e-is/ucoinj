@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -127,10 +128,24 @@ public abstract class AbstractService implements Closeable {
 
     protected Object parseResponse(CloseableHttpResponse response, Class<?> ResultClass) throws IOException {
         Object result;
-        try (InputStream content = response.getEntity().getContent()) {
-            Reader reader = new InputStreamReader(content, Charsets.UTF_8);
-            result = gson.fromJson(reader, ResultClass);
+        
+        // If trace enable, log the response before parsing
+        if (log.isTraceEnabled()) {
+            try (InputStream content = response.getEntity().getContent()) {
+                String jsonString = getContentAsString(content);
+                log.trace("Parsing response:\n" + jsonString);
+                result = gson.fromJson(jsonString, ResultClass);
+            } 
         }
+        
+        // trace not enable
+        else {
+            try (InputStream content = response.getEntity().getContent()) {
+                Reader reader = new InputStreamReader(content, Charsets.UTF_8);
+                result = gson.fromJson(reader, ResultClass);                
+            }
+        }
+        
 
         if (result == null) {
             throw new UCoinTechnicalException("ucoin.client.core.emptyResponse");
@@ -141,5 +156,16 @@ public abstract class AbstractService implements Closeable {
         }
 
         return result;
+    }
+    
+    protected String getContentAsString(InputStream content) throws IOException {
+        Reader reader = new InputStreamReader(content, Charsets.UTF_8);
+        StringBuilder result = new StringBuilder();
+        char[] buf = new char[64];
+        int len = 0;
+        while((len = reader.read(buf)) != -1) {
+            result.append(buf, 0, len);
+        }
+        return result.toString();
     }
 }
