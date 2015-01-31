@@ -1,23 +1,34 @@
 ucoinj
 ======
 
-uCoin Java API
+uCoin Java API.
 
 
 ## Compile
 
-Compilation use [Maven 3](http://maven.apache.org/).
+Install required dependencies:
 
+ - Install [libsoidum](http://doc.libsodium.org/installation/README.html)
+ - Install [Maven 3](http://maven.apache.org/).
+
+Get the source code, then compile using Maven:
+ 
 ```bash
 $ mvn install
 ```
  
 ## Roadmap
 
+Done : 
+ - GET request :
+   - /wot/*
+
 In progress : 
- - GET requests (no auth API) 
+ - POST request:
+   - /wot/add
  
 What TODO Next ?
- 
- - Add crypto libray NaCl (Kalium ?)
- - POST requests (with auth) 
+  - /blockchain
+  - /network
+
+

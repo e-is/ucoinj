@@ -45,6 +45,19 @@ public class BlockchainService extends AbstractService{
     }
     
     /**
+     * Retrieve the current block
+     * @param number
+     * @return
+     * @throws Exception
+     */
+    public BlockchainBlock getCurrentBlock() throws Exception {
+        // get blockchain parameter
+        HttpGet httpGet = new HttpGet(getAppendedPath(ProtocolUrls.BLOCKCHAIN_BLOCK_CURRENT));
+        BlockchainBlock result = executeRequest(httpGet, BlockchainBlock.class);
+        return result;
+    }
+    
+    /**
      * Request to integrate the wot
      * @throws Exception 
      */

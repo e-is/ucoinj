@@ -1,33 +1,56 @@
 package io.ucoin.client.core;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 
 public class TestFixtures {
-
-    public String getNodeUrl() {
-        return "http://twiced.fr:9101";
-    }
 
     public String getUid() {
         return "cgeek";
     }
 
-    public String getKeySalt() {
-        return "a salt string";
+    public String getUserSalt() {
+        return "abc";
     }
 
-    public String getKeyPassword() {
-        return "a password string";
+    public String getUserPassword() {
+        return "def";
     }
 
     /**
-     * Th expected public key generated from getKeySalt() and getKeyPassword()
-     * 
+     * Seed, compute from Scrypt (salt and password) encode in Base64.<br/>
+     * Should correspond to the user's salt and password
      * @return
      */
-    public String getExpectedPublicKey() {
-        return "FedYyZ64tvNj7Z7dw2gt5Hssayr9o8t8wPvi16jWAxqY";
+    public String getUserSeedHash() {
+        return "zmPpDdTD0Q+yNgbqWFq5yHgVUny2KIDtbVHz/hNuwew=";
+    }
+    
+    /**
+     * Return the user's public key, encode in base 58.<br/>
+     * Should correspond to the user's salt and password
+     * @return
+     */
+    public String getUserPublicKey() {
+    	return "G2CBgZBPLe6FSFUgpx2Jf1Aqsgta6iib3vmDRA1yLiqU";
+    }
+    
+    /**
+     * return the user's private key, encode in base 58.<br/>
+     * Should correspond to the user's salt and password
+     * @return
+     */
+    public String getUserPrivateKey() {
+        return "58LDg8QLmF5pv6Dn9h7X4yFKfMTdP8fdAiWVcyDoTRJu454fwRihCLULH4MW37zncsg4ruoTGJPZneWk22QmG1w4";
+    }
+    
+    /**
+     * A signature, that corespond to getSelfTimestamp(), getUid()
+     * @return
+     */
+    public String getSelfSignature() {
+    	return "TMgQysT7JwY8XwemskwWb8LBDJybLUsnxqaaUvSteIYpOxRiB92gkFQQcGpBwq4hAwhEiqBAiFkiXIozppDDDg==";
+    }
+    
+    public long getSelfTimestamp() {
+    	return 1420881879;
     }
 }

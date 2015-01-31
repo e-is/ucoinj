@@ -9,6 +9,7 @@ public interface ProtocolUrls {
     public static final String BLOCKCHAIN_PARAMETERS = BLOCKCHAIN_BASE + "/parameters";
 
     public static final String BLOCKCHAIN_BLOCK = BLOCKCHAIN_BASE + "/block/%s";
+    public static final String BLOCKCHAIN_BLOCK_CURRENT = BLOCKCHAIN_BASE + "/current";
 
 
     public static final String BLOCKCHAIN_MEMBERSHIP = BLOCKCHAIN_BASE + "/membership";
@@ -16,6 +17,8 @@ public interface ProtocolUrls {
     /* Web Of Trust */
     
     public static final String WOT_BASE = "/wot";
+    
+    public static final String WOT_ADD = WOT_BASE + "/add";
     
     public static final String WOT_LOOKUP = WOT_BASE + "/lookup/%s";
     

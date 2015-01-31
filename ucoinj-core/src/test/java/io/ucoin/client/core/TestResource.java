@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
+import org.abstractj.kalium.NaCl;
+import org.abstractj.kalium.NaCl.Sodium;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -74,6 +76,8 @@ public class TestResource implements TestRule {
 
     protected void before(Description description) throws Throwable {
         testClass = description.getTestClass();
+        
+        NaCl.init();
 
         boolean defaultDbName = StringUtils.isEmpty(configName);
 

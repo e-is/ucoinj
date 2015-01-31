@@ -129,12 +129,21 @@ public abstract class AbstractService implements Closeable {
     protected Object parseResponse(CloseableHttpResponse response, Class<?> ResultClass) throws IOException {
         Object result;
         
+        boolean stringOutput = ResultClass.equals(String.class);
+        
         // If trace enable, log the response before parsing
-        if (log.isTraceEnabled()) {
+        if (log.isTraceEnabled() || stringOutput) {
             try (InputStream content = response.getEntity().getContent()) {
-                String jsonString = getContentAsString(content);
-                log.trace("Parsing response:\n" + jsonString);
-                result = gson.fromJson(jsonString, ResultClass);
+                String stringContent = getContentAsString(content);
+                if (log.isTraceEnabled()) {
+                	log.trace("Parsing response:\n" + stringContent);
+                }
+                
+                if (stringOutput) {
+                	return stringContent;
+                }
+                
+                result = gson.fromJson(stringContent, ResultClass);
             } 
         }
         

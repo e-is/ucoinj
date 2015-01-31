@@ -15,7 +15,8 @@ public class BlockchainBlock implements Serializable {
     
     private String version;
     private Integer nonce;
-    private Integer date;
+    private Integer number;
+	private Integer date;
     private Integer confirmedDate;
     private Integer membersCount;
     private String currency;
@@ -47,6 +48,13 @@ public class BlockchainBlock implements Serializable {
     public void setNonce(Integer nonce) {
         this.nonce = nonce;
     }
+
+    public Integer getNumber() {
+		return number;
+	}
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
     public Integer getDate() {
         return date;
     }
