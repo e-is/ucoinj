@@ -1,6 +1,5 @@
 package io.ucoin.client.core.technical.crypto;
 
-import static io.ucoin.client.core.technical.crypto.CryptoUtils.CHARSET_UTF8;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 
 import java.nio.charset.Charset;
@@ -41,11 +40,11 @@ public class CryptoUtils extends Util {
 		return result;
 	}
 
-	protected static byte[] decodeUTF8(String string) {
+	public static byte[] decodeUTF8(String string) {
 		return string.getBytes(CHARSET_UTF8);
 	}
 	
-	protected static byte[] decodeAscii(String string) {
+	public static byte[] decodeAscii(String string) {
 		return string.getBytes(CHARSET_ASCII);
 	}
 	

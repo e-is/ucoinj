@@ -89,7 +89,7 @@ public abstract class AbstractService implements Closeable {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T> T executeRequest(HttpUriRequest request, Class<? extends T> resultClass) throws IOException {
+    protected <T> T executeRequest(HttpUriRequest request, Class<? extends T> resultClass) {
         Preconditions.checkNotNull(httpClient);
         T result = null;
 
@@ -121,6 +121,9 @@ public abstract class AbstractService implements Closeable {
             }
         } catch (ConnectException e) {
             throw new UCoinTechnicalException("ucoin.client.core.connect", e);
+        }
+        catch (IOException e) {
+            throw new UCoinTechnicalException(e.getMessage(), e);
         }
 
         return result;

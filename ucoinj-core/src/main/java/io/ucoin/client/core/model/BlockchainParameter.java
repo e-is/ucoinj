@@ -1,14 +1,18 @@
 package io.ucoin.client.core.model;
 
+import java.io.Serializable;
+
 /**
  * Blockwhain parameters.
  * 
  * @author Benoit Lavenier <benoit.lavenier@e-is.pro>
  * @since 1.0
  */
-public class BlockchainParameter {
+public class BlockchainParameter implements Serializable {
 
-    private String currency;
+	private static final long serialVersionUID = 929951447031659549L;
+
+	private String currency;
     
     /**
      * The %growth of the UD every [dt] period

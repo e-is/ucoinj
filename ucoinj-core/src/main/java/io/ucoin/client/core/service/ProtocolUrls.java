@@ -26,5 +26,12 @@ public interface ProtocolUrls {
     
     public static final String WOT_CERTIFIERS_OF = WOT_BASE + "/certifiers-of/%s";
    
+    /* Transaction */
     
+    public static final String TX_BASE = "/tx";
+
+    public static final String TX_PROCESS = TX_BASE + "/process";
+    
+    public static final String TX_SOURCES = TX_BASE + "/sources/%s";
+
 }
