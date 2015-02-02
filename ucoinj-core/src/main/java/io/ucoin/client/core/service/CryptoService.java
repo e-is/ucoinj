@@ -18,7 +18,7 @@ import com.lambdaworks.crypto.SCrypt;
  * Crypto services (sign...)
  * Created by eis on 10/01/15.
  */
-public class CryptoService extends AbstractService {
+public class CryptoService extends BaseService {
 
     // Length of the seed key (generated deterministically, use to generate the 64 key pair).
     private static int SEED_BYTES = 32;
