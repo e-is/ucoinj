@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringReader;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,16 +31,16 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 
-public abstract class AbstractService extends BaseService implements Closeable {
+public class AbstractNetworkService extends BaseService implements Closeable {
 
-    private static final Log log = LogFactory.getLog(AbstractService.class);
+    private static final Log log = LogFactory.getLog(AbstractNetworkService.class);
 
     protected URI baseUri;
     protected Integer baseTimeOut;
     protected final Gson gson;
     protected final CloseableHttpClient httpClient;
 
-    public AbstractService() {
+    public AbstractNetworkService() {
         super();
         Configuration config = Configuration.instance();
 
@@ -186,3 +185,5 @@ public abstract class AbstractService extends BaseService implements Closeable {
         return result.toString();
     }
 }
+
+

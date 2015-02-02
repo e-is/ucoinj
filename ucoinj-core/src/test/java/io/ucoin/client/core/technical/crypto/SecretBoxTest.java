@@ -45,7 +45,7 @@ public class SecretBoxTest {
 	@Test
 	public void TO_REMOVETest() {
 		String expectedBase64Hash = resource.getFixtures().getUserSeedHash();
-		String expectedSecKeyHash = CryptoUtils.encodeBase64((CryptoUtils.decodeBase58(resource.getFixtures().getUserPrivateKey())));
+		String expectedSecKeyHash = CryptoUtils.encodeBase64((CryptoUtils.decodeBase58(resource.getFixtures().getUserSecretKey())));
 		String expectedPubKeyHash = CryptoUtils.encodeBase64((CryptoUtils.decodeBase58(resource.getFixtures().getUserPublicKey()
 				)));
 		
@@ -82,7 +82,7 @@ public class SecretBoxTest {
 
 		SecretBox secretBox = createSecretBox();
 
-		Assert.assertEquals(resource.getFixtures().getUserPrivateKey(),
+		Assert.assertEquals(resource.getFixtures().getUserSecretKey(),
 				secretBox.getSecretKey());
 	}
 

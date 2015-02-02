@@ -42,7 +42,7 @@ public class TestFixtures {
      * Should correspond to the user's salt and password
      * @return
      */
-    public String getUserPrivateKey() {
+    public String getUserSecretKey() {
         return "58LDg8QLmF5pv6Dn9h7X4yFKfMTdP8fdAiWVcyDoTRJu454fwRihCLULH4MW37zncsg4ruoTGJPZneWk22QmG1w4";
     }
     
@@ -57,4 +57,14 @@ public class TestFixtures {
     public long getSelfTimestamp() {
     	return 1420881879;
     }
+    
+    /**
+     * Get a public key of another user, encode in base 58.
+     * @return
+     */
+    public String getOtherUserPublicKey() {
+    	// = kimamila
+        return "5ocqzyDMMWf1V8bsoNhWb1iNwax1e9M7VTUN6navs8of";
+    }
+
 }

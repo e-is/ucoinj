@@ -2,12 +2,15 @@ package io.ucoin.client.core.service;
 
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 
-import java.util.ServiceLoader;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class ServiceLocator {
+public class ServiceLocator implements Closeable {
 
 
     /* Logger */
@@ -17,15 +20,26 @@ public class ServiceLocator {
      * The shared instance of this ServiceLocator.
      */
     private static ServiceLocator instance = new ServiceLocator();
+    
+    private final Map<Class<?>, Object> serviceCache;
 
 
     protected ServiceLocator() {
         // shouldn't be instantiated
-        
+        serviceCache = new HashMap<Class<?>, Object>();
     }
     
     public void init() {
         
+    }
+    
+    @Override
+    public void close() throws IOException {
+    	for(Object service: serviceCache.values()) {
+    		if (service instanceof Closeable) {
+    			((Closeable)service).close();
+    		}
+    	}
     }
 
     /**
@@ -50,13 +64,32 @@ public class ServiceLocator {
         return getService(BlockchainService.class);
     }
     
+    public TransactionService getTransactionService() {
+        return getService(TransactionService.class);
+    }
+    
+
+    public CryptoService getCryptoService() {
+        return getService(CryptoService.class);
+    }
+    
+    
     /* -- Internal methods -- */
-    protected <S> S getService(Class<S> clazz) {
-        ServiceLoader<S> loader = ServiceLoader.load(clazz);
-        for (S service : loader) {
+    protected <S extends BaseService> S getService(Class<S> clazz) {
+        if (serviceCache.containsKey(clazz)) {
+            return (S)serviceCache.get(clazz);
+        }
+        try {
+            S service = (S)clazz.newInstance();
+            serviceCache.put(clazz, service);
+
+            // Call initialization
+            service.initialize();
+
             return service;
         }
-        
-        throw new UCoinTechnicalException("No such service found : " + clazz.getName());
+        catch (Exception e) {
+            throw new UCoinTechnicalException("Could not load service: " + clazz.getName(), e);
+        }
     }
 }

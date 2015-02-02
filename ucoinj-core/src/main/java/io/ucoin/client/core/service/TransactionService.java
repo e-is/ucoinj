@@ -1,9 +1,11 @@
 package io.ucoin.client.core.service;
 
+import io.ucoin.client.core.model.TxOutput;
 import io.ucoin.client.core.model.TxSource;
 import io.ucoin.client.core.model.TxSourceResults;
 import io.ucoin.client.core.model.Wallet;
 import io.ucoin.client.core.model.WotLookupResults;
+import io.ucoin.client.core.technical.UCoinTechnicalException;
 import io.ucoin.client.core.technical.crypto.KeyPair;
 
 import java.net.URISyntaxException;
@@ -18,81 +20,182 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
 
-public class TransactionService extends AbstractService{
+public class TransactionService extends AbstractNetworkService {
 
 	private static final Log log = LogFactory.getLog(TransactionService.class);
 
-    public TransactionService() {
-        super();
-    }
-    
-    public void transfert(Wallet wallet, String destPubKey, double amount, String comments) throws Exception {
-    	// http post /tx/process
-        HttpPost httpPost = new HttpPost(getAppendedPath(ProtocolUrls.TX_PROCESS));
-        
-        // compute tranction
-		String transaction = getTransaction(wallet, destPubKey, amount, comments); 
-        List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+	public CryptoService cryptoService;
+
+	public TransactionService() {
+		super();
+	}
+
+	@Override
+	public void initialize() {
+		cryptoService = ServiceLocator.instance().getCryptoService();
+	}
+
+	public void transfert(Wallet wallet, String destPubKey, long amount,
+			String comments) throws Exception {
+		// http post /tx/process
+		HttpPost httpPost = new HttpPost(
+				getAppendedPath(ProtocolUrls.TX_PROCESS));
+
+		// compute transaction
+		String transaction = getSignedTransaction(wallet, destPubKey, amount,
+				comments);
+
+		if (log.isDebugEnabled()) {
+			log.debug(String.format(
+					"Will send transaction document: \n------\n%s------",
+					transaction));
+		}
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
 		urlParameters.add(new BasicNameValuePair("transaction", transaction));
- 
-		httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));		
-                
-        String selfResult = executeRequest(httpPost, String.class);
-        log.info("received from /tx/process: " + selfResult);
-    }
-    
 
+		httpPost.setEntity(new UrlEncodedFormEntity(urlParameters));
 
-	public TxSourceResults getSources(String pubKey) throws Exception {
-	       if (log.isDebugEnabled()) {
-	            log.debug(String.format("Get sources by pubKey: %s", pubKey));
-	        }
+		String selfResult = executeRequest(httpPost, String.class);
+		log.info("received from /tx/process: " + selfResult);
+	}
 
-	        // get parameter
-	        String path = String.format(ProtocolUrls.TX_SOURCES, pubKey);
-	        HttpGet httpGet = new HttpGet(getAppendedPath(path));
-	        TxSourceResults result = executeRequest(httpGet, TxSourceResults.class);
+	public TxSourceResults getSources(String pubKey) {
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Get sources by pubKey: %s", pubKey));
+		}
 
-	        // Compute the balance
-	        result.setBalance(computeBalance(result.getSources()));
-	        
-	        return result;
+		// get parameter
+		String path = String.format(ProtocolUrls.TX_SOURCES, pubKey);
+		HttpGet httpGet = new HttpGet(getAppendedPath(path));
+		TxSourceResults result = executeRequest(httpGet, TxSourceResults.class);
+
+		// Compute the balance
+		result.setBalance(computeBalance(result.getSources()));
+
+		return result;
 
 	}
-    
-    /* -- internal methods -- */
-    
-    public String getTransaction(Wallet wallet, String destPubKey, double amount, String comments){
-    	
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("Version: 1\n")
-    	.append("Type: Transaction\n")
-    	.append("Currency: ").append(wallet.getCurrency()).append("\n")
-    	.append("Issuers:\n")
-    	// add issuer pubkey
-    	.append(wallet.getPubKeyHash()).append("\n")
-    	// Inputs coins
-    	.append("Inputs:")
-    	//INDEX:SOURCE:NUMBER:FINGERPRINT:AMOUNT
-    	// Output
-    	.append("Outputs:")
-    	//PUBLIC_KEY:AMOUNT
-    	.append("Comment: ").append(comments).append("\n")
-    	//SIGNATURES
-    	.append("\n");
-    	
-    	return sb.toString();
-    }
-    
-    protected double computeBalance(List<TxSource> sources) {
-    	if (sources == null) {
-    		return 0d;
-    	}
-    	
-    	double balance = 0d;
-    	for (TxSource source: sources) {
-    		balance += source.getAmount();
-    	}
-    	return balance;
-    }
+
+	/* -- internal methods -- */
+
+	public String getSignedTransaction(Wallet wallet, String destPubKey,
+			long amount, String comments) {
+
+		String transaction = getTransaction(wallet, destPubKey, amount,
+				comments);
+		String signature = cryptoService.sign(transaction, wallet.getSecKey());
+
+		return new StringBuilder().append(transaction).append(signature)
+				.append('\n').toString();
+	}
+
+	public String getTransaction(Wallet wallet, String destPubKey, long amount,
+			String comments) {
+
+		// Retrieve the wallet sources
+		TxSourceResults sourceResults = getSources(wallet.getPubKeyHash());
+		if (sourceResults == null) {
+			throw new UCoinTechnicalException("Unable to load user sources.");
+		}
+
+		List<TxSource> sources = sourceResults.getSources();
+		if (sources == null || sources.isEmpty()) {
+			throw new InsufficientCredit(
+					"Insufficient credit : no credit found.");
+		}
+
+		List<TxSource> txInputs = new ArrayList<TxSource>();
+		List<TxOutput> txOutputs = new ArrayList<TxOutput>();
+		computeInputsAndOuputs(wallet.getPubKeyHash(), destPubKey, sources,
+				amount, txInputs, txOutputs);
+
+		return getTransaction(wallet.getCurrency(), wallet.getPubKeyHash(),
+				destPubKey, txInputs, txOutputs, comments);
+	}
+
+	public String getTransaction(String currency, String srcPubKey,
+			String destPubKey, List<TxSource> inputs, List<TxOutput> outputs,
+			String comments) {
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("Version: 1\n").append("Type: Transaction\n")
+				.append("Currency: ").append(currency).append('\n')
+				.append("Issuers:\n")
+				// add issuer pubkey
+				.append(srcPubKey).append('\n');
+
+		// Inputs coins
+		sb.append("Inputs:\n");
+		for (TxSource input : inputs) {
+			// INDEX:SOURCE:NUMBER:FINGERPRINT:AMOUNT
+			sb.append(0).append(':').append(input.getType()).append(':')
+					.append(input.getNumber()).append(':')
+					.append(input.getFingerprint()).append(':')
+					.append(input.getAmount()).append('\n');
+		}
+
+		// Output
+		sb.append("Outputs:\n");
+		for (TxOutput output : outputs) {
+			// PUBLIC_KEY:AMOUNT
+			sb.append(output.getPubKey()).append(':')
+					.append(output.getAmount()).append('\n');
+		}
+
+		// Comment
+		sb.append("Comment: ").append(comments).append('\n');
+
+		return sb.toString();
+	}
+
+	public void computeInputsAndOuputs(String srcPubKey, String destPubKey,
+			List<TxSource> sources, long amount, List<TxSource> inputs,
+			List<TxOutput> outputs) {
+
+		long rest = amount;
+		long restForHimSelf = 0;
+
+		for (TxSource source : sources) {
+			long srcAmount = source.getAmount();
+			inputs.add(source);
+			if (srcAmount >= rest) {
+				restForHimSelf = srcAmount - rest;
+				rest = 0;
+				break;
+			}
+			rest -= srcAmount;
+		}
+
+		if (rest > 0) {
+			throw new InsufficientCredit(String.format(
+					"Insufficient credit. Need %s more units.", rest));
+		}
+
+		// outputs
+		{
+			TxOutput output = new TxOutput();
+			output.setPubKey(destPubKey);
+			output.setAmount(amount);
+			outputs.add(output);
+		}
+		if (restForHimSelf > 0) {
+			TxOutput output = new TxOutput();
+			output.setPubKey(srcPubKey);
+			output.setAmount(restForHimSelf);
+			outputs.add(output);
+		}
+	}
+
+	protected long computeBalance(List<TxSource> sources) {
+		if (sources == null) {
+			return 0;
+		}
+
+		long balance = 0;
+		for (TxSource source : sources) {
+			balance += source.getAmount();
+		}
+		return balance;
+	}
 }

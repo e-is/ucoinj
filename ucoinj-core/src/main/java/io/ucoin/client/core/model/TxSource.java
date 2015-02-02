@@ -2,15 +2,34 @@ package io.ucoin.client.core.model;
 
 import java.io.Serializable;
 
-public class TxSource implements Serializable {
+public class TxSource implements Serializable, Cloneable {
 
 	private static final long serialVersionUID = 8084087351543574142L;
 
 	private String type;	
 	private int number;	
 	private String fingerprint;	
-    private double amount;
+    private long amount;
 
+    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+    	
+    	TxSource clone = (TxSource)super.clone();
+    	clone.type = type;
+    	clone.number = number;
+    	clone.fingerprint = fingerprint;
+    	clone.amount = amount;
+    	return clone;
+    }
+    
+    /**
+	 * Source type : <ul>
+	 * <li><code>D</code> : Universal Dividend</li>
+	 * <li><code>T</code> : Transaction</li>
+	 * </ul>
+	 * @return
+	 */
 	public String getType() {
 		return type;
 	}
@@ -19,6 +38,10 @@ public class TxSource implements Serializable {
 		this.type = type;
 	}
 
+	/**
+	 * The block number where the source has been written
+	 * @return
+	 */
 	public int getNumber() {
 		return number;
 	}
@@ -35,11 +58,11 @@ public class TxSource implements Serializable {
 		this.fingerprint = fingerprint;
 	}
 
-	public double getAmount() {
+	public long getAmount() {
 		return amount;
 	}
 
-	public void setAmount(double amount) {
+	public void setAmount(long amount) {
 		this.amount = amount;
 	}    
 }

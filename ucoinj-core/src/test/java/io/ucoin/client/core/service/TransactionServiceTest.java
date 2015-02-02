@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -28,18 +29,23 @@ public class TransactionServiceTest {
 	private static final Log log = LogFactory.getLog(TransactionServiceTest.class);
 	@ClassRule
 	public static final TestResource resource = TestResource.create();
+	
+	private TransactionService service;
+	
+	@Before
+	public void setUp() {
+		service = ServiceLocator.instance().getTransactionService();
+	}
 
 	@Test
-	@Ignore
-	// FIXME : implement getTransaction
 	public void transfert() throws Exception {
 
-		TransactionService service = new TransactionService();
+		
 		service.transfert(
 				createTestWallet(),
-				"kimamila",
-				1.0d,
-				"mon comments");
+				resource.getFixtures().getOtherUserPublicKey(),
+				1,
+				"my comments" + System.currentTimeMillis());
 
 		// close
 		service.close();
@@ -67,10 +73,11 @@ public class TransactionServiceTest {
 
 	protected Wallet createTestWallet() {
 		Wallet wallet = new Wallet(
+				resource.getFixtures().getCurrency(),
 				resource.getFixtures().getUid(),
 				CryptoUtils.decodeBase58(resource.getFixtures().getUserPublicKey()),
-				CryptoUtils.decodeBase58(resource.getFixtures().getUserPrivateKey()));
-
+				CryptoUtils.decodeBase58(resource.getFixtures().getUserSecretKey()));
+		
 		return wallet;
 	}
 }

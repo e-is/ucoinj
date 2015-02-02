@@ -8,7 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
-public class BlockchainService extends AbstractService{
+public class BlockchainService extends AbstractNetworkService {
 
     private static final Log log = LogFactory.getLog(BlockchainService.class);
 
