@@ -1,6 +1,5 @@
 package io.ucoin.client.core.service;
 
-import java.util.Base64;
 
 import io.ucoin.client.core.TestResource;
 import io.ucoin.client.core.model.BasicIdentity;

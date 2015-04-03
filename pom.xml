@@ -25,13 +25,17 @@
     <xerces.version>2.9.0</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
     <gson.version>2.2.2</gson.version>
+    <kalium.version>0.3.1-SNAPSHOT</kalium.version>
+    <scrypt.version>1.4.0</scrypt.version>
+    <elasticsearch.version>1.4.4</elasticsearch.version>
 
     <nuitonConfigVersion>3.0-rc-2</nuitonConfigVersion>
     <nuitonI18nVersion>3.3</nuitonI18nVersion>
 
     <!-- UI versions -->
-    <wicket.version>6.14.0</wicket.version>
-    <jquery-ui.version>6.14.0</jquery-ui.version>
+    <wicket.version>7.0.0-M5</wicket.version>
+    <wicketstuff.version>7.0.0-M5</wicketstuff.version>
+    <jquery-ui.version>7.0.0-M5</jquery-ui.version>
 
     <yuicompressor-maven-plugin.version>1.3.0</yuicompressor-maven-plugin.version>
     <htmlcompressor-maven-plugin.version>1.3</htmlcompressor-maven-plugin.version>
@@ -83,7 +87,7 @@
 
   <modules>
     <module>ucoinj-core</module>
-    <!-- <module>ucoinj-web</module> -->
+    <module>ucoinj-web</module>
   </modules>
 
   <scm>
@@ -92,8 +96,25 @@
     <developerConnection>scm:svn:https://github.com/blavenie/ucoinj/</developerConnection>
   </scm>
 
+  <repositories>
+    <repository>
+      <id>wicketstuff-core-releases</id>
+      <url>https://oss.sonatype.org/content/repositories/releases</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
   <dependencyManagement>
     <dependencies>
+
+      <dependency>
+        <groupId>io.ucoin</groupId>
+        <artifactId>ucoinj-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
@@ -180,6 +201,11 @@
         <version>${wicket.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.wicketstuff</groupId>
+        <artifactId>wicketstuff-restannotations-json</artifactId>
+        <version>${wicketstuff.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.apache.wicket</groupId>
         <artifactId>wicket-spring-annot</artifactId>
         <version>1.3.7</version>
@@ -244,6 +270,31 @@
         <artifactId>jetty-all</artifactId>
         <version>${jetty.version}</version>
         <scope>provided</scope>
+      </dependency>
+
+      <!-- NaCL lib -->
+      <dependency>
+        <groupId>org.abstractj.kalium</groupId>
+        <artifactId>kalium</artifactId>
+        <version>${kalium.version}</version>
+      </dependency>
+      <!-- scrypt lib -->
+      <dependency>
+        <groupId>com.lambdaworks</groupId>
+        <artifactId>scrypt</artifactId>
+        <version>${scrypt.version}</version>
+      </dependency>
+      <!-- elastic search -->
+      <dependency>
+        <groupId>org.elasticsearch</groupId>
+        <artifactId>elasticsearch</artifactId>
+        <version>${elasticsearch.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>2.5.1</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

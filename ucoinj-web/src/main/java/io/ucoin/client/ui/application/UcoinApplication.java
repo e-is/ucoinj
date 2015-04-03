@@ -8,6 +8,7 @@ import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSessio
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.util.time.Duration;
+import org.wicketstuff.rest.utils.mounting.PackageScanner;
 
 public class UcoinApplication extends AuthenticatedWebApplication {
     
@@ -34,7 +35,12 @@ public class UcoinApplication extends AuthenticatedWebApplication {
         mountPage("home", getHomePage());
         mountPage("login", LoginPage.class);
         mountPage("wallet", WalletPage.class);
-        
+
+        // Mount rest service, from annotations
+        PackageScanner.scanPackage("io.ucoin.client.ui.service.rest");
+
+        getMarkupSettings().setStripWicketTags(true);
+
     }
     
     /**

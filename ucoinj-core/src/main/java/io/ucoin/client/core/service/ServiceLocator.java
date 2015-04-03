@@ -1,5 +1,6 @@
 package io.ucoin.client.core.service;
 
+import io.ucoin.client.core.service.search.SearchService;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 
 import java.io.Closeable;
@@ -72,8 +73,11 @@ public class ServiceLocator implements Closeable {
     public CryptoService getCryptoService() {
         return getService(CryptoService.class);
     }
-    
-    
+
+    public SearchService getSearchService() {
+        return getService(SearchService.class);
+    }
+
     /* -- Internal methods -- */
     protected <S extends BaseService> S getService(Class<S> clazz) {
         if (serviceCache.containsKey(clazz)) {

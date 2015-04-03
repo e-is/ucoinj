@@ -128,7 +128,7 @@ public enum ConfigurationOption implements ConfigOptionDef {
     NODE_CURRENCY(
             "ucoinj.node.currency",
             n("ucoinj.config.option.node.currency.description"),
-            "zeta_brouzouf",
+            "meta_brouzouf",
             String.class,
             false),
 
@@ -142,14 +142,14 @@ public enum ConfigurationOption implements ConfigOptionDef {
     NODE_HOST(
             "ucoinj.node.host",
             n("ucoinj.config.option.node.host.description"),
-            "twiced.fr",
+            "metab.ucoin.io",
             String.class,
             false),
 
     NODE_PORT(
             "ucoinj.node.port",
             n("ucoinj.config.option.node.port.description"),
-            "9101",
+            "9201",
             Integer.class,
             false),
 

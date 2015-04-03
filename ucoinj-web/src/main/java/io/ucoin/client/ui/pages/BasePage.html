@@ -1,25 +1,26 @@
 <html xmlns:wicket="http://git-wip-us.apache.org/repos/asf/wicket/repo?p=wicket.git;a=blob_plain;f=wicket-core/src/main/resources/META-INF/wicket-1.5.xsd;hb=master">
 <head>
-  <title wicket:id="pageTitle">UCoin client :: UI wicket</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta wicket:id="contentLanguage" http-equiv="Content-Language" content="">
-<!--   <link type="text/css" rel="stylesheet" href="ucoin.css"/> -->
-  
-  <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.2.min.css">
-  
+  <wicket:header-items/>
+  <title wicket:id="pageTitle">UCoin client :: UI wicket</title>
   <link rel="shortcut icon" href="favicon.ico">
+
+  <link type="text/css" rel="stylesheet" href="css/jquery-mobile-ucoin/jquery.mobile.ucoin.css">
+  <link type="text/css" rel="stylesheet" href="css/jquery-mobile/jquery.mobile-1.4.5.min.css">
   <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:300,400,700">
-<!--   <script src="js/zepto.min.js"></script> -->
-  <script src="js/jquery-1.11.0.min.js"></script>
-  <script src="js/jquery.mobile-1.4.2.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="ucoin.css"/>
+
+  <script src="js/jquery-1.11.2.min.js"></script>
+  <script src="js/jquery.mobile-1.4.5.min.js"></script>
+
 </head>
 <body class="ui-mobile-viewport ui-overlay-a">
 	<div class="ui-page ui-page-theme-a ui-page-footer-fixed ui-page-active">
-		<div wicket:id="feedback" class="pageFeedback">[feedback]</div>
-	
 		<div class="ui-content jqm-content">
+           <div wicket:id="feedback"></div>
 	       <wicket:child />
-		    <div class="jqm-footer ui-footer ui-bar-inherit ui-footer-fixed slideup">
+		    <div class="jqm-footer ui-footer ui-bar-inherit ui-footer-fixed slideup" >
 		    	<wicket:message key="base.footer"><span wicket:id="version">[version]</span></wicket:message>
 		    </div>
 		</div>

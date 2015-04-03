@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.wicketstuff:wicketstuff-restannotations:7.0.0-M5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/wicketstuff/wicketstuff-restannotations/7.0.0-M5/wicketstuff-restannotations-7.0.0-M5.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/wicketstuff/wicketstuff-restannotations/7.0.0-M5/wicketstuff-restannotations-7.0.0-M5-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/wicketstuff/wicketstuff-restannotations/7.0.0-M5/wicketstuff-restannotations-7.0.0-M5-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

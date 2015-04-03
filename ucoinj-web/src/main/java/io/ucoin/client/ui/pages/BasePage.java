@@ -22,6 +22,7 @@ package io.ucoin.client.ui.pages;
  */
 
 
+import com.googlecode.wicket.jquery.ui.panel.JQueryFeedbackPanel;
 import io.ucoin.client.ui.application.UcoinApplication;
 import io.ucoin.client.ui.application.UcoinConfiguration;
 import io.ucoin.client.ui.application.UcoinSession;
@@ -38,30 +39,31 @@ public class BasePage extends WebPage {
 
 	private static final long serialVersionUID = 2589483412605551035L;
 	private FeedbackPanel feedback = null;
-	
 
-	public BasePage(final PageParameters parameters) {
-	    UcoinSession session = (UcoinSession)getSession();
-	    
-	    // page title
+
+    public BasePage(final PageParameters parameters) {
+        UcoinSession session = (UcoinSession)getSession();
+
+        // page title
         add(new Label("pageTitle", new StringResourceModel("base.pageTitle", this, null)));
-        
-		// contentLanguage
-		WebMarkupContainer contentLanguage = new WebMarkupContainer("contentLanguage");
-		contentLanguage.add(new AttributeModifier("content", session.getLocale().toString()));
-		add(contentLanguage);
 
-		feedback = new FeedbackPanel("feedback");
-		feedback.setOutputMarkupId(true);
-		add(feedback);
-		
-		// In NOT compact mode : update version
-		String version = getUcoinConfiguration().getVersion();
-		if (version == null) {
-			version = "";
-		} 
-		add(new Label("version", version));
-	}
+        // contentLanguage
+        WebMarkupContainer contentLanguage = new WebMarkupContainer("contentLanguage");
+        contentLanguage.add(new AttributeModifier("content", session.getLocale().toString()));
+        add(contentLanguage);
+
+        feedback = new JQueryFeedbackPanel("feedback");
+        feedback.setOutputMarkupId(true);
+        add(feedback);
+
+        // In NOT compact mode : update version
+        String version = getUcoinConfiguration().getVersion();
+        if (version == null) {
+            version = "";
+        }
+        add(new Label("version", version));
+    }
+
 	
 	public final UcoinSession getUcoinSession() {
 	    return (UcoinSession)getSession();
@@ -73,5 +75,10 @@ public class BasePage extends WebPage {
 	
 	public final UcoinConfiguration getUcoinConfiguration() {
         return getUcoinApplication().getConfiguration();
+    }
+
+
+    public void setUseGlobalFeedback(boolean useGlobalFeedback) {
+        feedback.setVisibilityAllowed(useGlobalFeedback);
     }
 }
