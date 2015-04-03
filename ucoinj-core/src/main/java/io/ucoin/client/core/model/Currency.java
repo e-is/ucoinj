@@ -18,6 +18,7 @@ public class Currency implements Serializable {
     private Account account;
     private Long accountId;
     private String[] tags;
+    private String senderPubkey;
 
     public Currency() {
     }
@@ -112,5 +113,13 @@ public class Currency implements Serializable {
 
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+
+    public String getSenderPubkey() {
+        return senderPubkey;
+    }
+
+    public void setSenderPubkey(String senderPubkey) {
+        this.senderPubkey = senderPubkey;
     }
 }

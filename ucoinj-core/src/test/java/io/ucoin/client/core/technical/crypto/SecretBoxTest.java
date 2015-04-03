@@ -41,18 +41,6 @@ public class SecretBoxTest {
 		message = "my message to encrypt !".getBytes("UTF-8");
 
 	}
-	
-	@Test
-	public void TO_REMOVETest() {
-		String expectedBase64Hash = resource.getFixtures().getUserSeedHash();
-		String expectedSecKeyHash = CryptoUtils.encodeBase64((CryptoUtils.decodeBase58(resource.getFixtures().getUserSecretKey())));
-		String expectedPubKeyHash = CryptoUtils.encodeBase64((CryptoUtils.decodeBase58(resource.getFixtures().getUserPublicKey()
-				)));
-		
-		System.out.println("expectedSeed(base64)        : " + expectedBase64Hash);
-		System.out.println("expectedSecKeyHash(base64): " + expectedSecKeyHash);
-		System.out.println("expectedPubKeyHash(base64): " + expectedPubKeyHash);
-	}
 
 	@Test
 	public void computeSeedFromSaltAndPassword()
@@ -128,15 +116,19 @@ public class SecretBoxTest {
 	
 	
 	@Test
-	@Ignore
 	public void verifyKey() throws AddressFormatException {
 
 		SecretBox secretBox = createSecretBox();
 		String pubKey = secretBox.getPublicKey();
 		
 		VerifyKey verifyKey = new VerifyKey(Base58.decode(pubKey));
-		
-		// TODO
+
+        String message = "my message to encrypt !";
+        String signature  = secretBox.sign(message);
+
+        boolean isValidSignature = verifyKey.verify(CryptoUtils.decodeUTF8(message),
+                CryptoUtils.decodeBase64(signature));
+        Assert.assertTrue(isValidSignature);
 	}
 
 	/* -- Internal methods -- */

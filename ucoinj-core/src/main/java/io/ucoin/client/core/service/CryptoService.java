@@ -91,6 +91,13 @@ public class CryptoService extends BaseService {
         );
     }
 
+    public boolean verify(String message, String signature, String publicKey) {
+        byte[] messageBinary = decodeUTF8(message);
+        byte[] signatureBinary = decodeBase64(signature);
+        byte[] publicKeyBinary = decodeBase58(publicKey);
+        return verify(messageBinary, signatureBinary, publicKeyBinary);
+    }
+
     /* -- Internal methods -- */
 
     protected byte[] sign(byte[] message, byte[] secretKey) {
@@ -101,6 +108,20 @@ public class CryptoService extends BaseService {
 
         checkLength(signature, SIGNATURE_BYTES);
         return signature;
+    }
+
+    protected boolean verify(byte[] message, byte[] signature, byte[] publicKey) {
+        byte[] sigAndMsg = new byte[SIGNATURE_BYTES + message.length];
+        for (int i = 0; i < SIGNATURE_BYTES; i++) sigAndMsg[i] = signature[i];
+        for (int i = 0; i < message.length; i++) sigAndMsg[i+SIGNATURE_BYTES] = message[i];
+
+        byte[] buffer = new byte[SIGNATURE_BYTES + message.length];
+        LongLongByReference bufferLength = new LongLongByReference(0);
+
+        int result = naCl.crypto_sign_ed25519_open(buffer, bufferLength, sigAndMsg, sigAndMsg.length, publicKey);
+        boolean validSignature = (result == 0);
+
+        return validSignature;
     }
 
 }

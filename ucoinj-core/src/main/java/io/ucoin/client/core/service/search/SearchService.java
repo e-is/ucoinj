@@ -3,6 +3,8 @@ package io.ucoin.client.core.service.search;
 import com.google.common.collect.Lists;
 import io.ucoin.client.core.model.Currency;
 import io.ucoin.client.core.service.BaseService;
+import io.ucoin.client.core.service.CryptoService;
+import io.ucoin.client.core.service.ServiceLocator;
 import io.ucoin.client.core.technical.ObjectUtils;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 import org.apache.commons.collections4.CollectionUtils;
@@ -146,6 +148,47 @@ public class SearchService extends BaseService implements Closeable {
             throw new UCoinTechnicalException("Error while preparing index: " + ioe.getMessage(), ioe);
         }
         CreateIndexResponse response = createIndexRequestBuilder.execute().actionGet();
+    }
+
+    public void createCurrency(Currency currency) throws DuplicateCurrencyException{
+        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
+        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
+
+        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
+        if (existingCurrency != null) {
+            throw new DuplicateCurrencyException(String.format("Currency with name [%s] already exists.", currency.getCurrencyName()));
+        }
+
+        indexCurrency(currency);
+    }
+
+    public void saveCurrency(Currency currency, String senderPubkey) throws DuplicateCurrencyException{
+        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
+        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
+
+        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
+
+        // Currency not exists, so create it
+        if (existingCurrency == null) {
+            // make sure to fill the sender
+            currency.setSenderPubkey(senderPubkey);
+
+            // Save it
+            indexCurrency(currency);
+        }
+
+        // Exists, so check the owner signature
+        else {
+            if (!Objects.equals(currency.getSenderPubkey(), senderPubkey)) {
+                throw new AccessDeniedException("Could not change currency, because it has been registered by another public key.");
+            }
+
+            // Make sure the sender is not changed
+            currency.setSenderPubkey(senderPubkey);
+
+            // Save changes
+            indexCurrency(currency);
+        }
     }
 
     public void indexCurrency(Currency currency) {
