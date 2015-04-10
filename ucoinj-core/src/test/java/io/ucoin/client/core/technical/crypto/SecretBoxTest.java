@@ -1,33 +1,46 @@
 package io.ucoin.client.core.technical.crypto;
 
-import static org.abstractj.kalium.NaCl.sodium;
-import static org.abstractj.kalium.NaCl.Sodium.SIGNATURE_BYTES;
-import static org.abstractj.kalium.NaCl.Sodium.XSALSA20_POLY1305_SECRETBOX_NONCEBYTES;
-import static org.abstractj.kalium.crypto.Util.slice;
+/*
+ * #%L
+ * UCoin Java Client :: Core API
+ * %%
+ * Copyright (C) 2014 - 2015 EIS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+
 import io.ucoin.client.core.TestResource;
+import org.abstractj.kalium.keys.SigningKey;
+import org.abstractj.kalium.keys.VerifyKey;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 
-import jnr.ffi.byref.LongLongByReference;
-
-import org.abstractj.kalium.crypto.Util;
-import org.abstractj.kalium.keys.KeyPair;
-import org.abstractj.kalium.keys.SigningKey;
-import org.abstractj.kalium.keys.VerifyKey;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import static org.abstractj.kalium.NaCl.Sodium.XSALSA20_POLY1305_SECRETBOX_NONCEBYTES;
 
 
 public class SecretBoxTest {
 
-	private static final Log log = LogFactory.getLog(SecretBoxTest.class);
+	private static final Logger log = LoggerFactory.getLogger(SecretBoxTest.class);
 	
 	private byte[] message;
 	private byte[] nonce = new byte[XSALSA20_POLY1305_SECRETBOX_NONCEBYTES];

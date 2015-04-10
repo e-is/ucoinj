@@ -1,23 +1,44 @@
 package io.ucoin.client.core.config;
 
+/*
+ * #%L
+ * UCoin Java Client :: Core API
+ * %%
+ * Copyright (C) 2014 - 2015 EIS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 
-import static org.nuiton.i18n.I18n.t;
+
+import com.google.common.base.Charsets;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
+import org.nuiton.config.ApplicationConfig;
+import org.nuiton.config.ApplicationConfigHelper;
+import org.nuiton.config.ApplicationConfigProvider;
+import org.nuiton.config.ArgumentsParserException;
+import org.nuiton.util.version.Version;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
 import java.util.Locale;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.nuiton.config.ApplicationConfig;
-import org.nuiton.config.ApplicationConfigHelper;
-import org.nuiton.config.ApplicationConfigProvider;
-import org.nuiton.config.ArgumentsParserException;
-import org.nuiton.util.version.Version;
-
-import com.google.common.base.Charsets;
+import static org.nuiton.i18n.I18n.t;
 
 /**
  * Access to configuration options
@@ -26,7 +47,7 @@ import com.google.common.base.Charsets;
  */
 public class Configuration  {
     /** Logger. */
-    private static final Log log = LogFactory.getLog(Configuration.class);
+    private static final Logger log = LoggerFactory.getLogger(Configuration.class);
 
     /**
      * Delegate application config.
@@ -116,6 +137,12 @@ public class Configuration  {
         applicationConfig.setOption(
                 ConfigurationOption.BASEDIR.getKey(),
                 appBasedir.getAbsolutePath());
+
+        // Override application version
+        String implementationVersion = this.getClass().getPackage().getSpecificationVersion();
+        applicationConfig.setOption(
+                ConfigurationOption.VERSION.getKey(),
+                implementationVersion);
     }
 
     /**
@@ -126,10 +153,16 @@ public class Configuration  {
      */
     protected void addAlias(ApplicationConfig applicationConfig) {
         applicationConfig.addAlias("-h", "--option", ConfigurationOption.NODE_HOST.getKey());
+        applicationConfig.addAlias("--host", "--option", ConfigurationOption.NODE_HOST.getKey());
         applicationConfig.addAlias("-p", "--option", ConfigurationOption.NODE_PORT.getKey());
+        applicationConfig.addAlias("--port", "--option", ConfigurationOption.NODE_PORT.getKey());
         applicationConfig.addAlias("-c", "--option", ConfigurationOption.NODE_CURRENCY.getKey());
         applicationConfig.addAlias("--salt", "--option", ConfigurationOption.USER_SALT.getKey());
         applicationConfig.addAlias("--passwd", "--option", ConfigurationOption.USER_PASSWD.getKey());
+        applicationConfig.addAlias("-esh", "--option", ConfigurationOption.NODE_ELASTICSEARCH_HOST.getKey());
+        applicationConfig.addAlias("--es-host", "--option", ConfigurationOption.NODE_ELASTICSEARCH_HOST.getKey());
+        applicationConfig.addAlias("-esp", "--option", ConfigurationOption.NODE_ELASTICSEARCH_PORT.getKey());
+        applicationConfig.addAlias("--es-port", "--option", ConfigurationOption.NODE_ELASTICSEARCH_PORT.getKey());
      }
 
     public File getConfigFile() {
@@ -166,8 +199,6 @@ public class Configuration  {
     public File getCacheDirectory() {
         return applicationConfig.getOptionAsFile(ConfigurationOption.CACHE_DIRECTORY.getKey());
     }
-
-   
 
     public Version getVersion() {
         return applicationConfig.getOptionAsVersion(ConfigurationOption.VERSION.getKey());
@@ -210,6 +241,20 @@ public class Configuration  {
     public int getNodeTimeout() {
         return applicationConfig.getOptionAsInt(ConfigurationOption.NODE_TIMEOUT.getKey());
     }
-     
-    
+
+    public String getNodeElasticSearchHost() {
+        return applicationConfig.getOption(ConfigurationOption.NODE_ELASTICSEARCH_HOST.getKey());
+    }
+
+    public int getNodeElasticSearchPort() {
+        return applicationConfig.getOptionAsInt(ConfigurationOption.NODE_ELASTICSEARCH_PORT.getKey());
+    }
+
+    public boolean isNodeElasticSearchLocal() {
+        return applicationConfig.getOptionAsBoolean(ConfigurationOption.NODE_ELASTICSEARCH_LOCAL.getKey());
+    }
+
+    public String getNodeElasticSearchLocalClusterName() {
+        return applicationConfig.getOption(ConfigurationOption.NODE_ELASTICSEARCH_LOCAL_CLUSTER_NAME.getKey());
+    }
 }

@@ -10,11 +10,19 @@
   <groupId>io.ucoin</groupId>
   <artifactId>ucoinj-web</artifactId>
   <packaging>war</packaging>
-  <name>UCoin Java Client :: UI Wicket</name>
+  <name>UCoin Java Client :: Web</name>
 
   <properties>
     <performRelease>false</performRelease>
     <jetty.reload>automatic</jetty.reload>
+
+    <!-- bundle configuration -->
+    <bundlePrefix>ucoinj-web-${project.version}</bundlePrefix>
+    <bundle.jvmArgs>-server -Xmx1g -Xms512m -XX:MaxPermSize=128M -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=50 -XX:+ScavengeBeforeFullGC -XX:+CMSScavengeBeforeRemark</bundle.jvmArgs>
+
+    <!-- Unit test -->
+    <ucoin.log.file>${project.build.directory}/${bundlePrefix}.log</ucoin.log.file>
+    <wicket.configuration>development</wicket.configuration>
   </properties>
 
   <dependencies>
@@ -72,29 +80,25 @@
       <artifactId>guava</artifactId>
     </dependency>
 
-    <!-- LOGGING DEPENDENCIES - LOG4J -->
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-    </dependency>
+    <!-- LOGGING DEPENDENCIES - SLF4J -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jcl</artifactId>
-    </dependency>
-
-	<!-- JUNIT DEPENDENCY FOR TESTING -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>test</scope>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
+    </dependency>
+
+	  <!-- JUNIT DEPENDENCY FOR TESTING -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty.aggregate</groupId>
@@ -105,6 +109,13 @@
   <build>
     <finalName>${project.parent.artifactId}-${project.version}</finalName>
     <resources>
+      <resource>
+        <directory>src/main/filtered-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.properties</include>
+        </includes>
+      </resource>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
@@ -154,11 +165,11 @@
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
-		  <!-- excludes the Eclipse output directory -->
+		      <!-- excludes the Eclipse output directory -->
           <warSourceExcludes>WEB-INF/classes/**/*.*</warSourceExcludes>
           <warSourceIncludes>**/*.*</warSourceIncludes>
           <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
-          <warName>${build.warname}</warName>
+          <warName>${bundlePrefix}</warName>
           <webResources>
             <resource>
               <filtering>true</filtering>
@@ -278,12 +289,29 @@
     </profile>
 
     <profile>
-      <id>minimized-web-resources</id>
+      <id>add-release-properties</id>
       <activation>
         <property>
           <name>performRelease</name>
           <value>true</value>
         </property>
+      </activation>
+      <properties>
+        <!-- configure log file for tomcat -->
+        <ucoin.log.file>$\{catalina.base\}/logs/${bundlePrefix}.log</ucoin.log.file>
+        <!-- wicket servlet into deployment configuration -->
+        <wicket.configuration>deployment</wicket.configuration>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>minimized-web-resources</id>
+      <activation>
+        <!-- FIXME BL : unable this cause a StackOverflowException
+         property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property-->
       </activation>
       <build>
         <defaultGoal>package</defaultGoal>

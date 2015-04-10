@@ -1,129 +1,96 @@
 package io.ucoin.client.core.service.search;
 
+/*
+ * #%L
+ * UCoin Java Client :: Core API
+ * %%
+ * Copyright (C) 2014 - 2015 EIS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import io.ucoin.client.core.model.Currency;
-import io.ucoin.client.core.service.BaseService;
-import io.ucoin.client.core.service.CryptoService;
 import io.ucoin.client.core.service.ServiceLocator;
 import io.ucoin.client.core.technical.ObjectUtils;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequestBuilder;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
-import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsResponse;
-import org.elasticsearch.action.exists.ExistsResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.action.suggest.SuggestRequestBuilder;
 import org.elasticsearch.action.suggest.SuggestResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.transport.TransportClient;
-import org.elasticsearch.common.io.stream.StreamOutput;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHitField;
 import org.elasticsearch.search.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.elasticsearch.search.suggest.Suggest;
 import org.elasticsearch.search.suggest.completion.CompletionSuggestionBuilder;
-import org.elasticsearch.search.suggest.term.TermSuggestionBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
 import java.io.IOException;
-import java.util.*;
-import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by Benoit on 30/03/2015.
  */
-public class SearchService extends BaseService implements Closeable {
+public class CurrencyIndexerService extends BaseIndexerService {
 
-    public static final Log log = LogFactory.getLog(SearchService.class);
+    private static final Logger log = LoggerFactory.getLogger(CurrencyIndexerService.class);
 
-    private Client client;
-    private ObjectMapper objectMapper;
+    public static final String INDEX_NAME = "currency";
 
-    public SearchService() {
-    }
+    public static final String INDEX_TYPE_SIMPLE = "simple";
 
-    @Override
-    public void close() throws IOException {
-        client.close();
-    }
-
-    @Override
-    public void initialize() {
-        super.initialize();
-
-        // Node Client
-        //Node node = NodeBuilder.nodeBuilder().node();
-        //Client client = node.client();
-
-        // Transport Client
-        client = new TransportClient()
-                .addTransportAddress(new InetSocketTransportAddress("192.168.0.5", 9300));
-
-        objectMapper = new ObjectMapper();
-    }
-
-    public boolean existsIndex(String indexes) throws JsonProcessingException {
-        IndicesExistsRequestBuilder requestBuilder = client.admin().indices().prepareExists(indexes);
-        IndicesExistsResponse response = requestBuilder.execute().actionGet();
-
-        return response.isExists();
+    public CurrencyIndexerService() {
     }
 
     public void deleteIndex() throws JsonProcessingException {
-        if (!existsIndex("currency")) {
-            return;
-        }
-
-        DeleteIndexRequestBuilder deleteIndexRequestBuilder = client.admin().indices().prepareDelete("currency");
-        DeleteIndexResponse response = deleteIndexRequestBuilder.execute().actionGet();
+        deleteIndexIfExists(INDEX_NAME);
     }
 
     public void createIndex() throws JsonProcessingException {
-        CreateIndexRequestBuilder createIndexRequestBuilder = client.admin().indices().prepareCreate("currency");
+        CreateIndexRequestBuilder createIndexRequestBuilder = getClient().admin().indices().prepareCreate(INDEX_NAME);
         try {
-            XContentBuilder analyzer = XContentFactory.jsonBuilder().startObject().startObject("analyzer")
-                .startObject("custom_french_analyzer")
-                .field("tokenizer", "letter")
-                .field("filter", "asciifolding", "lowercase", "french_stem", "elision", "stop")
-                .endObject()
-                .startObject("tag_analyzer")
-                .field("tokenizer", "keyword")
-                .field("filter", "asciifolding", "lowercase")
-                .endObject()
-                .endObject().endObject();
 
             Settings indexSettings = ImmutableSettings.settingsBuilder()
                     .put("number_of_shards", 1)
                     .put("number_of_replicas", 1)
-                    .put("analyzer", analyzer)
+                    .put("analyzer", getDefaultAnalyzer())
                     .build();
             createIndexRequestBuilder.setSettings(indexSettings);
             //createIndexRequestBuilder.addAlias(new Alias("currencies"));
 
 
-            XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject("simple")
+            XContentBuilder mapping = XContentFactory.jsonBuilder().startObject().startObject(INDEX_TYPE_SIMPLE)
                     .startObject("properties")
                     .startObject("currencyName")
                     .field("type", "string")
@@ -141,7 +108,7 @@ public class SearchService extends BaseService implements Closeable {
                     .endObject()
                     .endObject().endObject();
 
-            createIndexRequestBuilder.addMapping("simple", mapping);
+            createIndexRequestBuilder.addMapping(INDEX_TYPE_SIMPLE, mapping);
 
         }
         catch(IOException ioe) {
@@ -150,46 +117,6 @@ public class SearchService extends BaseService implements Closeable {
         CreateIndexResponse response = createIndexRequestBuilder.execute().actionGet();
     }
 
-    public void createCurrency(Currency currency) throws DuplicateCurrencyException{
-        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
-        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
-
-        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
-        if (existingCurrency != null) {
-            throw new DuplicateCurrencyException(String.format("Currency with name [%s] already exists.", currency.getCurrencyName()));
-        }
-
-        indexCurrency(currency);
-    }
-
-    public void saveCurrency(Currency currency, String senderPubkey) throws DuplicateCurrencyException{
-        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
-        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
-
-        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
-
-        // Currency not exists, so create it
-        if (existingCurrency == null) {
-            // make sure to fill the sender
-            currency.setSenderPubkey(senderPubkey);
-
-            // Save it
-            indexCurrency(currency);
-        }
-
-        // Exists, so check the owner signature
-        else {
-            if (!Objects.equals(currency.getSenderPubkey(), senderPubkey)) {
-                throw new AccessDeniedException("Could not change currency, because it has been registered by another public key.");
-            }
-
-            // Make sure the sender is not changed
-            currency.setSenderPubkey(senderPubkey);
-
-            // Save changes
-            indexCurrency(currency);
-        }
-    }
 
     public void indexCurrency(Currency currency) {
         try {
@@ -205,10 +132,10 @@ public class SearchService extends BaseService implements Closeable {
             }
 
             // Serialize into JSON
-            byte[] json = objectMapper.writeValueAsBytes(currency);
+            byte[] json = getObjectMapper().writeValueAsBytes(currency);
 
             // Preparing indexation
-            IndexRequestBuilder indexRequest = client.prepareIndex("currency", "simple")
+            IndexRequestBuilder indexRequest = getClient().prepareIndex(INDEX_NAME, INDEX_TYPE_SIMPLE)
                     .setId(currency.getCurrencyName())
                     .setSource(json);
 
@@ -223,30 +150,30 @@ public class SearchService extends BaseService implements Closeable {
     }
 
     public List<String> getSuggestions(String query) {
-        CompletionSuggestionBuilder suggestionBuilder = new CompletionSuggestionBuilder("simple")
+        CompletionSuggestionBuilder suggestionBuilder = new CompletionSuggestionBuilder(INDEX_TYPE_SIMPLE)
             .text(query)
             .size(10) // limit to 10 results
             .field("tags");
 
         // Prepare request
-        SuggestRequestBuilder suggestRequest = client
-                .prepareSuggest("currency")
+        SuggestRequestBuilder suggestRequest = getClient()
+                .prepareSuggest(INDEX_NAME)
                 .addSuggestion(suggestionBuilder);
 
         // Execute query
         SuggestResponse response = suggestRequest.execute().actionGet();
 
         // Read query result
-        return toSuggestions(response, "simple", query);
+        return toSuggestions(response, INDEX_TYPE_SIMPLE, query);
     }
 
     public List<Currency> searchCurrencies(String query) {
         String[] queryParts = query.split("[\\t ]+");
 
         // Prepare request
-        SearchRequestBuilder searchRequest = client
-                .prepareSearch("currency")
-                .setTypes("simple")
+        SearchRequestBuilder searchRequest = getClient()
+                .prepareSearch(INDEX_NAME)
+                .setTypes(INDEX_TYPE_SIMPLE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         // If only one term, search as prefix
@@ -279,9 +206,9 @@ public class SearchService extends BaseService implements Closeable {
     public Currency getCurrencyById(String currencyId) {
 
         // Prepare request
-        SearchRequestBuilder searchRequest = client
-                .prepareSearch("currency")
-                .setTypes("simple")
+        SearchRequestBuilder searchRequest = getClient()
+                .prepareSearch(INDEX_NAME)
+                .setTypes(INDEX_TYPE_SIMPLE)
                 .setSearchType(SearchType.DFS_QUERY_THEN_FETCH);
 
         // If more than a word, search on terms match
@@ -301,6 +228,53 @@ public class SearchService extends BaseService implements Closeable {
 
     /* -- Internal methods -- */
 
+    protected void createCurrency(Currency currency) throws DuplicateIndexIdException, JsonProcessingException {
+        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
+        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
+
+        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
+        if (existingCurrency != null) {
+            throw new DuplicateIndexIdException(String.format("Currency with name [%s] already exists.", currency.getCurrencyName()));
+        }
+
+        // register to currency
+        indexCurrency(currency);
+
+        // Create sub indexes
+        ServiceLocator.instance().getBlockIndexerService().createIndex(currency.getCurrencyName());
+    }
+
+    protected void saveCurrency(Currency currency, String senderPubkey) throws DuplicateIndexIdException {
+        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
+        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
+
+        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
+
+        // Currency not exists, so create it
+        if (existingCurrency == null) {
+            // make sure to fill the sender
+            currency.setSenderPubkey(senderPubkey);
+
+            // Save it
+            indexCurrency(currency);
+        }
+
+        // Exists, so check the owner signature
+        else {
+            if (!Objects.equals(currency.getSenderPubkey(), senderPubkey)) {
+                throw new AccessDeniedException("Could not change currency, because it has been registered by another public key.");
+            }
+
+            // Make sure the sender is not changed
+            currency.setSenderPubkey(senderPubkey);
+
+            // Save changes
+            indexCurrency(currency);
+        }
+    }
+
+
+
     protected List<Currency> toCurrencies(SearchResponse response, boolean withHighlight) {
         try {
             // Read query result
@@ -309,7 +283,7 @@ public class SearchService extends BaseService implements Closeable {
             for (SearchHit searchHit : searchHits) {
                 Currency currency = null;
                 if (searchHit.source() != null) {
-                    currency = objectMapper.readValue(searchHit.source(), Currency.class);
+                    currency = getObjectMapper().readValue(searchHit.source(), Currency.class);
                 }
                 else {
                     currency = new Currency();
@@ -333,6 +307,7 @@ public class SearchService extends BaseService implements Closeable {
             throw new UCoinTechnicalException("Error while reading currency search result: " + e.getMessage(), e);
         }
     }
+
 
     protected List<String> toSuggestions(SuggestResponse response, String suggestionName, String query) {
         if (response.getSuggest() == null

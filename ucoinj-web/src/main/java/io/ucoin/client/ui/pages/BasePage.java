@@ -7,26 +7,26 @@ package io.ucoin.client.ui.pages;
  * Copyright (C) 2012 - 2013 Ifremer
  * %%
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
  * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * 
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
 
 import com.googlecode.wicket.jquery.ui.panel.JQueryFeedbackPanel;
 import io.ucoin.client.ui.application.UcoinApplication;
-import io.ucoin.client.ui.application.UcoinConfiguration;
 import io.ucoin.client.ui.application.UcoinSession;
-
+import io.ucoin.client.ui.config.WebConfiguration;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -57,7 +57,7 @@ public class BasePage extends WebPage {
         add(feedback);
 
         // In NOT compact mode : update version
-        String version = getUcoinConfiguration().getVersion();
+        String version = getConfiguration().getVersionAsString();
         if (version == null) {
             version = "";
         }
@@ -73,7 +73,7 @@ public class BasePage extends WebPage {
         return (UcoinApplication)getApplication();
     }
 	
-	public final UcoinConfiguration getUcoinConfiguration() {
+	public final WebConfiguration getConfiguration() {
         return getUcoinApplication().getConfiguration();
     }
 

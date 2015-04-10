@@ -1,5 +1,28 @@
 package io.ucoin.client.core.model;
 
+/*
+ * #%L
+ * UCoin Java Client :: Core API
+ * %%
+ * Copyright (C) 2014 - 2015 EIS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,9 +39,10 @@ public class BlockchainBlock implements Serializable {
     private String version;
     private Integer nonce;
     private Integer number;
-	private Integer date;
-    private Integer confirmedDate;
+	private Integer time;
+    private Integer medianTime;
     private Integer membersCount;
+    private Long monetaryMass;
     private String currency;
     private String issuer;
     private String signature;
@@ -35,7 +59,10 @@ public class BlockchainBlock implements Serializable {
 //            private int excluded": [],
 //            private int certifications": [],
 //            private int transactions": [],
+
 //            private int raw": "Version: 1\nType: Block\nCurrency: zeta_brouzouf\nNonce: 8233\nNumber: 1\nDate: 1416589860\nConfirmedDate: 1416589860\nIssuer: HnFcSms8jzwngtVomTTnzudZx7SHUQY8sVE1y8yBmULk\nPreviousHash: 00006CD96A01378465318E48310118AC6B2F3625\nPreviousIssuer: HnFcSms8jzwngtVomTTnzudZx7SHUQY8sVE1y8yBmULk\nMembersCount: 4\nIdentities:\nJoiners:\nActives:\nLeavers:\nExcluded:\nCertifications:\nTransactions:\n"
+    //private String raw;
+
     public String getVersion() {
         return version;
     }
@@ -55,17 +82,17 @@ public class BlockchainBlock implements Serializable {
 	public void setNumber(Integer number) {
 		this.number = number;
 	}
-    public Integer getDate() {
-        return date;
+    public Integer getTime() {
+        return time;
     }
-    public void setDate(Integer date) {
-        this.date = date;
+    public void setTime(Integer time) {
+        this.time = time;
     }
-    public Integer getConfirmedDate() {
-        return confirmedDate;
+    public Integer getMedianTime() {
+        return medianTime;
     }
-    public void setConfirmedDate(Integer confirmedDate) {
-        this.confirmedDate = confirmedDate;
+    public void setMedianTime(Integer medianTime) {
+        this.medianTime = medianTime;
     }
     public Integer getMembersCount() {
         return membersCount;
@@ -73,6 +100,15 @@ public class BlockchainBlock implements Serializable {
     public void setMembersCount(Integer membersCount) {
         this.membersCount = membersCount;
     }
+
+    public Long getMonetaryMass() {
+        return monetaryMass;
+    }
+
+    public void setMonetaryMass(Long monetaryMass) {
+        this.monetaryMass = monetaryMass;
+    }
+
     public String getCurrency() {
         return currency;
     }

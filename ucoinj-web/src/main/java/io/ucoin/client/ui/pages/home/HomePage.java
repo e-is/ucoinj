@@ -1,20 +1,42 @@
 package io.ucoin.client.ui.pages.home;
 
-//import com.googlecode.wicket.jquery.ui.form.autocomplete.AutoCompleteTextField;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.ajax.form.AjaxFormValidatingBehavior;
-import org.apache.wicket.event.IEvent;
-import org.apache.wicket.extensions.ajax.markup.html.autocomplete.*;
-import com.googlecode.wicket.jquery.ui.panel.JQueryFeedbackPanel;
-import io.ucoin.client.core.service.ServiceLocator;
-import io.ucoin.client.core.service.search.SearchService;
-import io.ucoin.client.ui.pages.BasePage;
+/*
+ * #%L
+ * UCoin Java Client :: Web
+ * %%
+ * Copyright (C) 2014 - 2015 EIS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 
+
+//import com.googlecode.wicket.jquery.ui.form.autocomplete.AutoCompleteTextField;
+
+import com.googlecode.wicket.jquery.ui.panel.JQueryFeedbackPanel;
+import io.ucoin.client.core.model.Currency;
+import io.ucoin.client.core.service.ServiceLocator;
+import io.ucoin.client.core.service.search.CurrencyIndexerService;
+import io.ucoin.client.ui.pages.BasePage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
+import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -26,9 +48,6 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Response;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import io.ucoin.client.core.model.Currency;
-import org.apache.wicket.util.string.Strings;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +191,7 @@ public class HomePage extends BasePage {
         }
         else {
 
-            SearchService service = ServiceLocator.instance().getSearchService();
+            CurrencyIndexerService service = ServiceLocator.instance().getCurrencyIndexerService();
             List<Currency> result = service.searchCurrencies(searchQuery);
 
             if (CollectionUtils.isNotEmpty(result)) {
@@ -201,7 +220,7 @@ public class HomePage extends BasePage {
             suggestions = Collections.<String>emptyList();
         }
         else {
-            SearchService service = ServiceLocator.instance().getSearchService();
+            CurrencyIndexerService service = ServiceLocator.instance().getCurrencyIndexerService();
             suggestions = service.getSuggestions(input);
 
             if (CollectionUtils.isEmpty(suggestions)) {
