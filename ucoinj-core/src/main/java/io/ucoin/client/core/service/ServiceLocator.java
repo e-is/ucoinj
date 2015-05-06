@@ -26,6 +26,7 @@ package io.ucoin.client.core.service;
 import io.ucoin.client.core.service.search.BlockIndexerService;
 import io.ucoin.client.core.service.search.CurrencyIndexerService;
 import io.ucoin.client.core.service.search.ElasticSearchService;
+import io.ucoin.client.core.service.search.client.CurrencyIndexerRestClientService;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,9 +114,15 @@ public class ServiceLocator implements Closeable {
         return getService(BlockIndexerService.class);
     }
 
+    public CurrencyIndexerRestClientService getCurrencyIndexerRestClientService() {
+        return getService(CurrencyIndexerRestClientService.class);
+    }
+
+
+
     /* -- Internal methods -- */
     protected <S extends BaseService> S getService(Class<S> clazz) {
-        if (serviceCache.containsKey(clazz)) {
+         if (serviceCache.containsKey(clazz)) {
             return (S)serviceCache.get(clazz);
         }
         try {

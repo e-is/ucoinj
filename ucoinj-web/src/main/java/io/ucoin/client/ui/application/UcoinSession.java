@@ -37,13 +37,11 @@ public class UcoinSession extends AuthenticatedWebSession {
 
     @Override
     public boolean authenticate(String username, String password) {
-        // TODO Auto-generated method stub
         return false;
     }
     
     @Override
     public Roles getRoles() {
-        // TODO Auto-generated method stub
         return null;
     }
 }

@@ -38,6 +38,7 @@ public class BlockchainBlock implements Serializable {
     
     private String version;
     private Integer nonce;
+    private Integer powMin;
     private Integer number;
 	private Integer time;
     private Integer medianTime;
@@ -74,6 +75,14 @@ public class BlockchainBlock implements Serializable {
     }
     public void setNonce(Integer nonce) {
         this.nonce = nonce;
+    }
+
+    public Integer getPowMin() {
+        return powMin;
+    }
+
+    public void setPowMin(Integer powMin) {
+        this.powMin = powMin;
     }
 
     public Integer getNumber() {

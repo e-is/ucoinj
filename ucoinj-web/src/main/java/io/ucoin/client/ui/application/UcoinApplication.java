@@ -26,6 +26,7 @@ package io.ucoin.client.ui.application;
 import io.ucoin.client.ui.config.WebConfiguration;
 import io.ucoin.client.ui.pages.home.HomePage;
 import io.ucoin.client.ui.pages.login.LoginPage;
+import io.ucoin.client.ui.pages.registry.CurrencyRegistryPage;
 import io.ucoin.client.ui.pages.wallet.WalletPage;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -58,12 +59,12 @@ public class UcoinApplication extends AuthenticatedWebApplication {
         mountPage("home", getHomePage());
         mountPage("login", LoginPage.class);
         mountPage("wallet", WalletPage.class);
+        mountPage("register-currency", CurrencyRegistryPage.class);
 
         // Mount rest service, from annotations
         PackageScanner.scanPackage("io.ucoin.client.ui.service.rest");
 
         getMarkupSettings().setStripWicketTags(true);
-
     }
     
     /**

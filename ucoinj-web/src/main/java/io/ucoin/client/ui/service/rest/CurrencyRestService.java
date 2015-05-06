@@ -23,27 +23,23 @@ package io.ucoin.client.ui.service.rest;
  */
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import io.ucoin.client.core.model.Currency;
-import io.ucoin.client.core.service.CryptoService;
 import io.ucoin.client.core.service.ServiceLocator;
 import io.ucoin.client.core.service.search.CurrencyIndexerService;
-import io.ucoin.client.core.technical.UCoinTechnicalException;
-import io.ucoin.client.core.technical.crypto.CryptoUtils;
-import io.ucoin.client.core.technical.jackson.JacksonUtils;
+import io.ucoin.client.core.service.search.InvalidSignatureException;
+import io.ucoin.client.core.technical.gson.GsonUtils;
 import io.ucoin.client.ui.application.UcoinSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wicketstuff.rest.annotations.MethodMapping;
 import org.wicketstuff.rest.annotations.ResourcePath;
 import org.wicketstuff.rest.annotations.parameters.PathParam;
-import org.wicketstuff.rest.contenthandling.json.objserialdeserial.JacksonObjectSerialDeserial;
+import org.wicketstuff.rest.annotations.parameters.RequestParam;
+import org.wicketstuff.rest.contenthandling.json.objserialdeserial.GsonObjectSerialDeserial;
 import org.wicketstuff.rest.contenthandling.mimetypes.RestMimeTypes;
 import org.wicketstuff.rest.contenthandling.webserialdeserial.TextualWebSerialDeserial;
 import org.wicketstuff.rest.resource.AbstractRestResource;
-import org.wicketstuff.rest.utils.http.HttpMethod;
-
-import java.io.IOException;
 
 @ResourcePath("/rest/currency")
 public class CurrencyRestService extends AbstractRestResource<TextualWebSerialDeserial> {
@@ -54,20 +50,20 @@ public class CurrencyRestService extends AbstractRestResource<TextualWebSerialDe
     private static final long serialVersionUID = 1L;
     
     private boolean debug;
-    private ObjectMapper objectMapper;
-    private static ObjectMapper staticObjectMapper;
+
+    private static Gson gson;
 
     public CurrencyRestService() {
         super(new TextualWebSerialDeserial("UTF-8", RestMimeTypes.APPLICATION_JSON,
-                new JacksonObjectSerialDeserial(initObjectMapper())));
+                new GsonObjectSerialDeserial(initGson())));
         debug = log.isDebugEnabled();
-        objectMapper = staticObjectMapper;
-        staticObjectMapper = null;
     }
 
-    protected static ObjectMapper initObjectMapper() {
-        staticObjectMapper = JacksonUtils.newObjectMapper();
-        return staticObjectMapper;
+    private static Gson initGson() {
+        if (gson == null) {
+            gson = GsonUtils.newBuilder().create();
+        }
+        return gson;
     }
 
     @MethodMapping("/{currencyId}")
@@ -76,24 +72,38 @@ public class CurrencyRestService extends AbstractRestResource<TextualWebSerialDe
         return service.getCurrencyById(currencyId);
     }
 
-    @MethodMapping(value = "/add", httpMethod = HttpMethod.POST)
-    public void saveCurrency(@PathParam("pubkey") String pubkey, @PathParam("currency") String jsonCurrency, @PathParam("sig") String signature) throws InvalidSignatureException {
+    @MethodMapping(value = "/add", produces = RestMimeTypes.TEXT_PLAIN)
+    public String saveCurrency(@RequestParam("pubkey") String pubkey, @RequestParam("currency") String jsonCurrency, @RequestParam("sig") String signature) throws InvalidSignatureException {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Asking to add new currency:\n - pubkey: %s\n - currency: %s\n - signature: %s", pubkey, jsonCurrency, signature));
+        }
 
-        // Check the signature
-        CryptoService cryptoService = ServiceLocator.instance().getCryptoService();
+        CurrencyIndexerService service = ServiceLocator.instance().getCurrencyIndexerService();
+        service.registerCurrency(pubkey, jsonCurrency, signature);
+
+        /*CryptoService cryptoService = ServiceLocator.instance().getCryptoService();
+
         if (!cryptoService.verify(jsonCurrency, signature, pubkey)) {
+            String currencyName = GsonUtils.getValueFromJSONAsString(jsonCurrency, "currencyName");
+            log.warn(String.format("Currency not added, because bad signature. currency [%s]", currencyName));
             throw new InvalidSignatureException("Bad signature");
         }
 
-        // Apply the save (will check if pubkey match the owner public key)
         Currency currency = null;
         try {
-            currency = objectMapper.readValue(CryptoUtils.decodeUTF8(jsonCurrency), Currency.class);
-        } catch (IOException e) {
-           throw new UCoinTechnicalException(e.getMessage(), e);
+            currency = gson.fromJson(jsonCurrency, Currency.class);
+            Preconditions.checkNotNull(currency);
+            Preconditions.checkNotNull(currency.getCurrencyName());
+        } catch(Throwable t) {
+            log.error("Error while reading currency JSON: " + jsonCurrency);
+            return "Parse error. Currency not readable.";
         }
+
         CurrencyIndexerService service = ServiceLocator.instance().getCurrencyIndexerService();
         service.saveCurrency(currency, pubkey);
+        */
+
+        return "Currency added";
     }
 
     /* -- Internal methods -- */

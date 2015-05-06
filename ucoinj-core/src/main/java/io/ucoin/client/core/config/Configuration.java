@@ -72,6 +72,9 @@ public class Configuration  {
         super();
         this.applicationConfig = applicationConfig;
         this.optionKeyToNotSave = null;
+
+        // Override application version
+        initVersion(applicationConfig);
     }
 
     public Configuration(String file, String... args) {
@@ -98,6 +101,9 @@ public class Configuration  {
         
         // Define Alias
         addAlias(applicationConfig);
+
+        // Override application version
+        initVersion(applicationConfig);
 
         // get all transient and final option keys
         Set<String> optionToSkip =
@@ -137,12 +143,20 @@ public class Configuration  {
         applicationConfig.setOption(
                 ConfigurationOption.BASEDIR.getKey(),
                 appBasedir.getAbsolutePath());
+    }
 
+    /**
+     * Override the version default option, from the MANIFEST implementation version (if any)
+     * @param applicationConfig
+     */
+    protected void initVersion(ApplicationConfig applicationConfig) {
         // Override application version
         String implementationVersion = this.getClass().getPackage().getSpecificationVersion();
-        applicationConfig.setOption(
-                ConfigurationOption.VERSION.getKey(),
-                implementationVersion);
+        if (implementationVersion != null) {
+            applicationConfig.setDefaultOption(
+                    ConfigurationOption.VERSION.getKey(),
+                    implementationVersion);
+        }
     }
 
     /**
@@ -248,6 +262,10 @@ public class Configuration  {
 
     public int getNodeElasticSearchPort() {
         return applicationConfig.getOptionAsInt(ConfigurationOption.NODE_ELASTICSEARCH_PORT.getKey());
+    }
+
+    public URL getNodeElasticSearchRestUrl() {
+        return applicationConfig.getOptionAsURL(ConfigurationOption.NODE_ELASTICSEARCH_REST_URL.getKey());
     }
 
     public boolean isNodeElasticSearchLocal() {

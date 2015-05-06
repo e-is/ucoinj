@@ -1,4 +1,4 @@
-package io.ucoin.client.ui.service.rest;
+package io.ucoin.client.core.service.search;
 
 /*
  * #%L

@@ -127,6 +127,15 @@ public class CurrencyIndexerServiceTest {
         //assertResults(queryText, currencies);
     }
 
+    @Test
+    public void getAllCurrencyNames() {
+        List<String> currencyNames = service.getAllCurrencyNames();
+        for (String currencyName: currencyNames) {
+            log.info("  - " + currencyName);
+        }
+
+    }
+
 	/* -- internal methods */
 
     protected void assertResults(String queryText, List<Currency> result) {

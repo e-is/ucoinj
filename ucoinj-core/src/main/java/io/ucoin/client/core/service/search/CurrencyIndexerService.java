@@ -24,11 +24,15 @@ package io.ucoin.client.core.service.search;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.gson.Gson;
 import io.ucoin.client.core.model.Currency;
+import io.ucoin.client.core.service.CryptoService;
 import io.ucoin.client.core.service.ServiceLocator;
 import io.ucoin.client.core.technical.ObjectUtils;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
+import io.ucoin.client.core.technical.gson.GsonUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequestBuilder;
@@ -70,7 +74,22 @@ public class CurrencyIndexerService extends BaseIndexerService {
 
     public static final String INDEX_TYPE_SIMPLE = "simple";
 
+    public static final String REGEX_WORD_SEPARATOR = "[-\\t@# ]+";
+    public static final String REGEX_SPACE = "[\\t\\n\\r ]+";
+
+    private CryptoService cryptoService;
+    private Gson gson;
+
     public CurrencyIndexerService() {
+        super();
+        this.gson = GsonUtils.newBuilder().create();
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
+        this.cryptoService = ServiceLocator.instance().getCryptoService();
     }
 
     public void deleteIndex() throws JsonProcessingException {
@@ -125,9 +144,9 @@ public class CurrencyIndexerService extends BaseIndexerService {
             // Fill tags
             if (ArrayUtils.isEmpty(currency.getTags())) {
                 String currencyName = currency.getCurrencyName();
-                String[] tags = currencyName.split("[-\\t@#_ ]+");
+                String[] tags = currencyName.split(REGEX_WORD_SEPARATOR);
                 List<String> tagsList = Lists.newArrayList(tags);
-                tagsList.add(currencyName.replaceAll("[-\\t@#_ ]+", " "));
+                tagsList.add(currencyName.replaceAll(REGEX_WORD_SEPARATOR, " "));
                 currency.setTags(tagsList.toArray(new String[tagsList.size()]));
             }
 
@@ -168,7 +187,7 @@ public class CurrencyIndexerService extends BaseIndexerService {
     }
 
     public List<Currency> searchCurrencies(String query) {
-        String[] queryParts = query.split("[\\t ]+");
+        String[] queryParts = query.split(REGEX_SPACE);
 
         // Prepare request
         SearchRequestBuilder searchRequest = getClient()
@@ -226,32 +245,14 @@ public class CurrencyIndexerService extends BaseIndexerService {
         return CollectionUtils.extractSingleton(currencies);
     }
 
-    /* -- Internal methods -- */
-
-    protected void createCurrency(Currency currency) throws DuplicateIndexIdException, JsonProcessingException {
-        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
-        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
-
-        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
-        if (existingCurrency != null) {
-            throw new DuplicateIndexIdException(String.format("Currency with name [%s] already exists.", currency.getCurrencyName()));
-        }
-
-        // register to currency
-        indexCurrency(currency);
-
-        // Create sub indexes
-        ServiceLocator.instance().getBlockIndexerService().createIndex(currency.getCurrencyName());
-    }
-
-    protected void saveCurrency(Currency currency, String senderPubkey) throws DuplicateIndexIdException {
+    public void saveCurrency(Currency currency, String senderPubkey) throws DuplicateIndexIdException {
         ObjectUtils.checkNotNull(currency, "currency could not be null") ;
         ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
 
         Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
 
         // Currency not exists, so create it
-        if (existingCurrency == null) {
+        if (existingCurrency == null || currency.getSenderPubkey() == null) {
             // make sure to fill the sender
             currency.setSenderPubkey(senderPubkey);
 
@@ -273,7 +274,64 @@ public class CurrencyIndexerService extends BaseIndexerService {
         }
     }
 
+    public List<String> getAllCurrencyNames() {
+        // Prepare request
+        SearchRequestBuilder searchRequest = getClient()
+                .prepareSearch(INDEX_NAME)
+                .setTypes(INDEX_TYPE_SIMPLE);
 
+        // Sort as score/memberCount
+        searchRequest.addSort("currencyName", SortOrder.ASC)
+            .addField("_id");
+
+        // Execute query
+        SearchResponse searchResponse = searchRequest.execute().actionGet();
+
+        // Read query result
+        return toCurrencyNames(searchResponse, true);
+    }
+
+    public void registerCurrency(String pubkey, String jsonCurrency, String signature) {
+        Preconditions.checkNotNull(pubkey);
+        Preconditions.checkNotNull(jsonCurrency);
+        Preconditions.checkNotNull(signature);
+
+        if (!cryptoService.verify(jsonCurrency, signature, pubkey)) {
+            String currencyName = GsonUtils.getValueFromJSONAsString(jsonCurrency, "currencyName");
+            log.warn(String.format("Currency not added, because bad signature. currency [%s]", currencyName));
+            throw new InvalidSignatureException("Bad signature");
+        }
+
+        Currency currency = null;
+        try {
+            currency = gson.fromJson(jsonCurrency, Currency.class);
+            Preconditions.checkNotNull(currency);
+            Preconditions.checkNotNull(currency.getCurrencyName());
+        } catch(Throwable t) {
+            log.error("Error while reading currency JSON: " + jsonCurrency);
+            throw new UCoinTechnicalException("Error while reading currency JSON: " + jsonCurrency, t);
+        }
+
+        saveCurrency(currency, pubkey);
+    }
+
+    /* -- Internal methods -- */
+
+    protected void createCurrency(Currency currency) throws DuplicateIndexIdException, JsonProcessingException {
+        ObjectUtils.checkNotNull(currency, "currency could not be null") ;
+        ObjectUtils.checkNotNull(currency.getCurrencyName(), "currency attribute 'currencyName' could not be null");
+
+        Currency existingCurrency = getCurrencyById(currency.getCurrencyName());
+        if (existingCurrency != null) {
+            throw new DuplicateIndexIdException(String.format("Currency with name [%s] already exists.", currency.getCurrencyName()));
+        }
+
+        // register to currency
+        indexCurrency(currency);
+
+        // Create sub indexes
+        ServiceLocator.instance().getBlockIndexerService().createIndex(currency.getCurrencyName());
+    }
 
     protected List<Currency> toCurrencies(SearchResponse response, boolean withHighlight) {
         try {
@@ -324,6 +382,17 @@ public class CurrencyIndexerService extends BaseIndexerService {
             Suggest.Suggestion.Entry.Option next = iterator.next();
             String suggestion = next.getText().string();
             result.add(suggestion);
+        }
+
+        return result;
+    }
+
+    protected List<String> toCurrencyNames(SearchResponse response, boolean withHighlight) {
+        // Read query result
+        SearchHit[] searchHits = response.getHits().getHits();
+        List<String> result = Lists.newArrayListWithCapacity(searchHits.length);
+        for (SearchHit searchHit : searchHits) {
+            result.add(searchHit.getId());
         }
 
         return result;

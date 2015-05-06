@@ -245,13 +245,17 @@
                   <name>jetty.port</name>
                   <value>8080</value>
                 </systemProperty>
+                <systemProperty>
+                  <name>log4j.configuration</name>
+                  <value>${project.basedir}/src/test/resources/log4j.properties</value>
+                </systemProperty>
               </systemProperties>
               <jvmArgs>${jetty.forked.jvmArgs}</jvmArgs>
               <reload>${jetty.reload}</reload>
               <useProvidedScope>true</useProvidedScope>
               <webXml>${jetty.docroot}/WEB-INF/web.xml</webXml>
-              <!-- Add test-classes (to use test log4j.properties) -->
-              <extraClasspath>${project.build.directory}/test-classes/log4j.properties;</extraClasspath>
+              <!-- Add log4j.properties (from test resources)
+              <extraClasspath>${project.basedir}/src/test/resources/log4j.properties</extraClasspath>-->
               <scanTargetPatterns>
                 <scanTargetPattern>
                   <directory>${project.basedir}/target/classes</directory>
@@ -267,6 +271,16 @@
               </scanTargetPatterns>
             </configuration>
             <dependencies>
+              <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+              </dependency>
+              <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+              </dependency>
               <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>

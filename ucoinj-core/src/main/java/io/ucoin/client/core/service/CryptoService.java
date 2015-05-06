@@ -112,6 +112,14 @@ public class CryptoService extends BaseService {
         );
     }
 
+    public String sign(String message, String secretKey) {
+        byte[] messageBinary = decodeUTF8(message);
+        byte[] secretKeyBinary = decodeBase58(secretKey);
+        return encodeBase64(
+                sign(messageBinary, secretKeyBinary)
+        );
+    }
+
     public boolean verify(String message, String signature, String publicKey) {
         byte[] messageBinary = decodeUTF8(message);
         byte[] signatureBinary = decodeBase64(signature);

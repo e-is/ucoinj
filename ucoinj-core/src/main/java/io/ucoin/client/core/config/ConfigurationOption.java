@@ -168,6 +168,13 @@ public enum ConfigurationOption implements ConfigOptionDef {
             Integer.class,
             false),
 
+    NODE_ELASTICSEARCH_PROTOCOL(
+            "ucoinj.node.elasticsearch.protocol",
+            n("ucoinj.config.option.node.elasticsearch.protocol.description"),
+            "http",
+            String.class,
+            false),
+
     NODE_ELASTICSEARCH_HOST(
             "ucoinj.node.elasticsearch.host",
             n("ucoinj.config.option.node.elasticsearch.host.description"),
@@ -180,6 +187,34 @@ public enum ConfigurationOption implements ConfigOptionDef {
             n("ucoinj.config.option.node.elasticsearch.port.description"),
             "9300",
             Integer.class,
+            false),
+
+    NODE_ELASTICSEARCH_REST_PROTOCOL(
+            "ucoinj.node.elasticsearch.rest.protocol",
+            n("ucoinj.config.option.node.elasticsearch.rest.protocol.description"),
+            "http",
+            String.class,
+            false),
+
+    NODE_ELASTICSEARCH_REST_HOST(
+            "ucoinj.node.elasticsearch.rest.host",
+            n("ucoinj.config.option.node.elasticsearch.rest.host.description"),
+            "localhost",
+            String.class,
+            false),
+
+    NODE_ELASTICSEARCH_REST_PORT(
+            "ucoinj.node.elasticsearch.rest.port",
+            n("ucoinj.config.option.node.elasticsearch.rest.port.description"),
+            "9200",
+            Integer.class,
+            false),
+
+    NODE_ELASTICSEARCH_REST_URL(
+            "ucoinj.node.elasticsearch.rest.url",
+            n("ucoinj.config.option.node.elasticsearch.rest.url.description"),
+            "${ucoinj.node.elasticsearch.rest.protocol}://${ucoinj.node.elasticsearch.rest.host}:${ucoinj.node.elasticsearch.rest.port}",
+            URL.class,
             false),
 
     NODE_ELASTICSEARCH_LOCAL(

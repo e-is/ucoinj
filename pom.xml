@@ -398,6 +398,15 @@
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.2</version>
+          <configuration>
+            <archive>
+              <manifest>
+                <!-- This is need to override the option version, in configuration classes -->
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+            </archive>
+          </configuration>
         </plugin>
 
         <plugin>

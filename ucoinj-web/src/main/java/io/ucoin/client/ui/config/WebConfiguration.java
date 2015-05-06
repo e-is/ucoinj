@@ -25,24 +25,20 @@ package io.ucoin.client.ui.config;
  */
 
 import io.ucoin.client.core.config.Configuration;
-import org.apache.commons.io.FileUtils;
+import io.ucoin.client.core.service.ServiceLocator;
+import io.ucoin.client.core.technical.UCoinTechnicalException;
 import org.apache.commons.lang3.StringUtils;
 import org.nuiton.config.ApplicationConfig;
-import org.nuiton.i18n.I18n;
-import org.nuiton.i18n.init.DefaultI18nInitializer;
-import org.nuiton.i18n.init.UserI18nInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
-import java.io.IOException;
-import java.util.Locale;
 
 public class WebConfiguration extends Configuration {
 
-    private static final String CONFIG_FILE_NAME = "ucoin-web.config";
+    private static final String CONFIG_FILE_NAME = "ucoinj-web.config";
 
     private static final String CONFIG_FILE_ENV_PROPERTY = CONFIG_FILE_NAME;
 
@@ -53,7 +49,14 @@ public class WebConfiguration extends Configuration {
     private static final Logger log = LoggerFactory.getLogger(WebConfiguration.class);
 
     static {
-        instance = new WebConfiguration(getWebConfigFile());
+        String configFile = getWebConfigFile();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Loading configuration from file [%s]", configFile));
+        }
+        if (new File(configFile).exists() == false) {
+            log.warn(String.format("Configuration file not found [%s]. Make sure the path is correct.", configFile));
+        }
+        instance = new WebConfiguration(configFile);
         initDefault();
     }
 
@@ -74,12 +77,8 @@ public class WebConfiguration extends Configuration {
     public WebConfiguration(String file, String... args) {
         super(file, args);
 
-        // Init i18n
-        /*try {
-            initI18n();
-        } catch (IOException e) {
-            throw new UCoinTechnicalException("i18n initialization failed", e);
-        }*/
+        // Init Crypto (NaCL lib...)
+        initCrypto();
     }
 
     public String getVersionAsString() {
@@ -109,36 +108,16 @@ public class WebConfiguration extends Configuration {
         return configFile;
     }
 
-    protected void initI18n() throws IOException {
-
-        // --------------------------------------------------------------------//
-        // init i18n
-        // --------------------------------------------------------------------//
-        File i18nDirectory = new File(getDataDirectory(), "i18n");
-        if (i18nDirectory.exists()) {
-            // clean i18n cache
-            FileUtils.cleanDirectory(i18nDirectory);
-        }
-
-        FileUtils.forceMkdir(i18nDirectory);
-
-        if (log.isDebugEnabled()) {
-            log.debug("I18N directory: " + i18nDirectory);
-        }
-
-        Locale i18nLocale = getI18nLocale();
-
+    protected void initCrypto() {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Starts i18n with locale [%s] at [%s]",
-                i18nLocale, i18nDirectory));
+            log.info("Starts Sodium (NaCL) library");
         }
-        I18n.init(new UserI18nInitializer(
-            i18nDirectory, new DefaultI18nInitializer(getI18nBundleName())),
-            i18nLocale);
-    }
 
-    protected static String getI18nBundleName() {
-        return "ucoin-web-i18n";
+        try {
+            // This call will load the sodium library
+            ServiceLocator.instance().getCryptoService();
+        } catch (Throwable e) {
+            throw new UCoinTechnicalException("Crypto lib (NaCL) initialization failed. Make sure sodium has been installed (or add library into a ./lib directory).", e);
+        }
     }
-
 }

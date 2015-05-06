@@ -30,6 +30,7 @@ import com.google.gson.Gson;
 import io.ucoin.client.core.config.Configuration;
 import io.ucoin.client.core.technical.UCoinTechnicalException;
 import io.ucoin.client.core.technical.gson.GsonUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.http.HttpStatus;
@@ -91,13 +92,29 @@ public class AbstractNetworkService extends BaseService implements Closeable {
         } 
     }
 
+    protected URIBuilder getURIBuilder(String... path)  {
+        String pathToAppend = Joiner.on('/').skipNulls().join(path);
+
+        int customQueryStartIndex = pathToAppend.indexOf('?');
+        String customQuery = null;
+        if (customQueryStartIndex != -1) {
+            customQuery = pathToAppend.substring(customQueryStartIndex+1);
+            pathToAppend = pathToAppend.substring(0, customQueryStartIndex);
+        }
+
+        URIBuilder builder = new URIBuilder(baseUri);
+
+        builder.setPath(baseUri.getPath() + pathToAppend);
+        if (StringUtils.isNotBlank(customQuery)) {
+            builder.setCustomQuery(customQuery);
+        }
+
+        return builder;
+    }
+
     protected URI getAppendedPath(String... path)  {
     	try {
-	        String pathToAppend = Joiner.on('/').skipNulls().join(path);
-	
-	        URIBuilder builder = new URIBuilder(baseUri);
-	        builder.setPath(baseUri.getPath() + pathToAppend);
-	        return builder.build();
+	        return getURIBuilder(path).build();
     	}
     	catch(URISyntaxException e) {
     		throw new UCoinTechnicalException(e);
@@ -200,6 +217,10 @@ public class AbstractNetworkService extends BaseService implements Closeable {
             result.append(buf, 0, len);
         }
         return result.toString();
+    }
+
+    protected Gson getGson() {
+        return gson;
     }
 }
 

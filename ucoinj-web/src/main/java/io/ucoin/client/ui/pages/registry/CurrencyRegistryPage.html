@@ -26,9 +26,18 @@
 <body>
 <wicket:extend>
     
-    <label for="text-3"><wicket:message key="login.username"/></label>
-    <input type="text" data-clear-btn="true" name="text-3" id="text-3" value="">
-    
+    <form action="http://localhost:8080/rest/currency/add" method="get">
+        <label for="text-pubkey"><wicket:message key="currency.register.pubkey"/></label>
+        <input type="text" data-clear-btn="true" name="pubkey" id="text-pubkey" value=""/>
+
+        <label for="text-currency"><wicket:message key="currency.register.currencyJson"/></label>
+        <input type="text" data-clear-btn="true" name="currency" id="text-currency" value=""/>
+
+        <label for="text-sig"><wicket:message key="currency.register.signature"/></label>
+        <input type="text" data-clear-btn="true" name="sig" id="text-sig" value=""/>
+        <input type="submit"/>
+    </form>
+
 </wicket:extend>
 </body>
 </html>
