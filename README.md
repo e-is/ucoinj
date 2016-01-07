@@ -29,7 +29,7 @@ The elasticsearch component is ready to use !
     - Linux (Ubuntu):
  
 ```bash
-$ sudo apt-get install openjdk-8-jre 
+sudo apt-get install openjdk-8-jre 
 ```
 
  - Install [libsodium](http://doc.libsodium.org/installation/index.html) (Linux only)
@@ -44,9 +44,9 @@ $ sudo apt-get install openjdk-8-jre
  - Unzip, then start a elasticsearch node, just do :
  
 ```bash
-$ unzip ucoinj-elasticsearch-X.Y-standalone.zip
-$ cd ucoinj-elasticsearch-X.Y
-$ ./ucoinj-elasticsearch.sh start index -h <node_host> -p <node_port>
+unzip ucoinj-elasticsearch-X.Y-standalone.zip
+cd ucoinj-elasticsearch-X.Y
+./ucoinj-elasticsearch.sh start index -h <node_host> -p <node_port>
 ```
 
 Example on meta_brouzouf test currency :
@@ -91,6 +91,60 @@ Options:
  -esp  --es-port <pwd>            ElasticSearch node port
 
 ```
+
+## Use it
+
+When a blockchain currency has been indexed, you can test some fun queries :
+
+ - get a block by number (e.g the block #0):
+    
+    http://localhost:9200/meta_brouzouf/block/0 -> with some additional metadata given by ES
+    http://localhost:9200/meta_brouzouf/block/0/_source1 -> the original JSON block
+        
+ - Block #125 with only hash, dividend and memberCount:
+ 
+    http://localhost:9200/meta_brouzouf/block/125/_source?_source=number,hash,dividend,membersCount
+      
+ - All blocks using a pubkey (or whatever):
+ 
+    http://localhost:9200/meta_brouzouf/block/_search?q=9sbUKBMvJVxtEVhC4N9zV1GFTdaempezehAmtwA8zjKQ1
+       
+ - All blocks with a dividend, with only some selected fields (like dividend, number, hahs).
+   Note : Query executed in command line, using CURL:
+
+```bash
+curl -XGET 'http://localhost:9200/meta_brouzouf/block/_search' -d '{
+"query": {
+        "filtered" : {
+            "filter": {
+                "exists" : { "field" : "dividend" }
+            }
+        }
+    },
+    "_source": ["number", "dividend", "hash", "membersCount"]
+ }'
+```
+        
+ - Get blocks from 0 to 100 
+
+```bash
+curl -XGET 'http://localhost:9200/meta_brouzouf/block/_search' -d '{
+    "query": {
+        "filtered" : {
+            "filter": {
+                "exists" : { "field" : "dividend" }
+            }
+        }
+    }
+}'
+```
+
+
+More documentation here :
+
+  - ElasticSearch [official web site](http://www.elastic.co/guide/en/elasticsearch/reference/1.3/docs-get.html#get-source-filtering)
+  
+  - a good [tutorial](http://okfnlabs.org/blog/2013/07/01/elasticsearch-query-tutorial.html) 
 
 
 ## Compile
