@@ -99,7 +99,8 @@ When a blockchain currency has been indexed, you can test some fun queries :
  - get a block by number (e.g the block #0):
     
     http://localhost:9200/meta_brouzouf/block/0 -> with some additional metadata given by ES
-    http://localhost:9200/meta_brouzouf/block/0/_source1 -> the original JSON block
+    
+    http://localhost:9200/meta_brouzouf/block/0/_source -> the original JSON block
         
  - Block #125 with only hash, dividend and memberCount:
  
