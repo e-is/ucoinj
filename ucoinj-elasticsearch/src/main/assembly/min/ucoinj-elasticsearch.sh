@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Comment out this line to specify your JAVA path:
-#export JAVA_HOME=/etc/jre...
+export JAVA_HOME=/usr/lib/jvm/default-java
 
 export APP_BASEDIR=$(pwd)
 export JAVA_COMMAND=$JAVA_HOME/bin/java

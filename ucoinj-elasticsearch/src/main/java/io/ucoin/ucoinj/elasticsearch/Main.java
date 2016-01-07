@@ -117,7 +117,7 @@ public class Main {
             // If scheduling is running, wait quit instruction
             if (!quit) {
                 while (!quit) {
-                    String userInput = CommandLinesUtils.readInput("Press [Q] or enter to quit", "Q", true);
+                    String userInput = CommandLinesUtils.readInput("*** uCoinj :: Elasticsearch successfully started *** >> To quit, press [Q] or enter\n", "Q", true);
                     quit = StringUtils.isNotBlank(userInput) && "Q".equalsIgnoreCase(userInput);
                 }
             }
