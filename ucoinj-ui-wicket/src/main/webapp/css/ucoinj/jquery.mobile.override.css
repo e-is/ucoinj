@@ -1,0 +1,74 @@
+
+/*.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+  color: #333;
+  text-shadow: 0 1px 0 #f3f3f3;
+}*/
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 20px;
+}
+
+/*.ui-overlay-a, .ui-page-theme-a, .ui-page-theme-a .ui-panel-wrapper {
+  background-color: #f9f9f9;
+  border-color: #bbb;
+  color: #333;
+  text-shadow: 0 1px 0 #f3f3f3;
+}*/
+
+.ui-state-error, .ui-widget-content .ui-state-error, .ui-widget-header .ui-state-error {
+  border: 1px solid red;
+  background: #fef1ec url("images/ui-bg_diagonals-thick_18_b81900_40x40.png") 50% 50% repeat-x;
+  color: #ffffff;
+}
+
+div.wicket-aa-container {
+  color: #333;
+  text-shadow: 0 1px 0 #f3f3f3;
+  margin-top: 3px;
+}
+
+div.wicket-aa {
+ font-size: 1em;
+  line-height: 1.3;
+  font-family: sans-serif;
+  background-color: #f6f6f6;
+  padding: 2px;
+  text-align:left;
+
+  color: #333;
+  text-shadow: 0 1px 0 #f3f3f3;
+
+  border-color: #ddd;
+  border-width: 1px 0 0;
+  border-style: solid;
+  margin: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+  background-clip: padding-box;
+  border-radius: .3125em;
+}
+
+div.wicket-aa ul {
+        list-style:none;
+        padding: 0;
+        margin: 0;
+}
+
+div.wicket-aa li {
+
+  display: block;
+  position: relative;
+  overflow: visible;
+  font-size: 16px;
+  cursor: pointer;
+  padding: .7em 1em;
+}
+
+div.wicket-aa ul li.selected {
+    background-color: #ededed;
+        margin:0;
+}

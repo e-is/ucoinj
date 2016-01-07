@@ -8,7 +8,13 @@ uCoin Java API.
 
 Install required dependencies:
 
- - Install [libsoidum](http://doc.libsodium.org/installation/README.html)
+ - Install [libsodium](http://doc.libsodium.org/installation/index.html)
+
+   - Linux: after [installation](http://doc.libsodium.org/installation/index.html), make sure the file 'libsodium.so' exists on: /usr/local/lib or /opt/local/lib.
+     If not, create a symbolic link.
+
+   - Windows: copy the file 'sodium.dll' into directory 'ucoinj-core/lib/'
+
  - Install [Maven 3](http://maven.apache.org/).
 
 Get the source code, then compile using Maven:

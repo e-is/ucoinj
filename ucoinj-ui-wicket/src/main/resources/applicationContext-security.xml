@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  SIH-Adagio :: UI for Core Allegro
+  $Id:$
+  $HeadURL:$
+  %%
+  Copyright (C) 2012 - 2014 Ifremer
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  #L%
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.0.xsd">
+
+    <security:global-method-security
+            secured-annotations="enabled">
+        <security:protect-pointcut access="ROLE_USER,ROLE_ADMIN" expression="execution(* io.ucoin.ucoinj.*.*(..))"/>
+    </security:global-method-security>
+
+    <!-- Spring REST service -->
+    <security:http pattern="/service/**" create-session="always">
+        <!-- Currency add: need auth -->
+        <security:intercept-url pattern="/service/currency/add" access="isAuthenticated()" />
+
+        <!-- Auth: need auth -->
+        <security:intercept-url pattern="/service/auth" access="isAuthenticated()" />
+
+        <!-- Other URL (version, etc.): no security -->
+        <security:intercept-url pattern="/service/**" access="permitAll" />
+
+        <security:http-basic />
+        <security:csrf disabled="true"/>
+    </security:http>
+
+    <!-- Web: Basic ressources (CSS, images) - no security -->
+    <security:http pattern="/images/**" security="none" />
+    <security:http pattern="/css/**" security="none" />
+    <security:http pattern="/js/**" security="none" />
+    <security:http pattern="/wicket/**" security="none" />
+    <security:http pattern="/*.css" security="none" />
+    <security:http pattern="/*.ico" security="none" />
+
+    <!-- Web: wicket pages -->
+    <security:http auto-config="true">
+        <security:intercept-url pattern="/" access="permitAll"/>
+
+        <security:intercept-url pattern="/login" access="permitAll"/>
+        <security:intercept-url pattern="/home" access="permitAll"/>
+        <security:intercept-url pattern="/home2" access="permitAll"/>
+        <security:intercept-url pattern="/currency" access="permitAll"/>
+        <security:intercept-url pattern="/service" access="hasAnyRole('USER','ADMIN')"/>
+        <security:intercept-url pattern="/admin/**" access="hasAnyRole('ADMIN')" />
+        <security:intercept-url pattern="/service/api" access="hasAnyRole('ADMIN')" />
+        <security:intercept-url pattern="/**" access="hasAnyRole('USER','ADMIN')" />
+
+        <security:anonymous granted-authority="ROLE_ANONYMOUS" username="anonymousUser"/>
+
+        <security:form-login login-page="/login"
+                             default-target-url="/home"
+                             authentication-failure-url="/login?error=true"/>
+
+        <security:logout invalidate-session="true" logout-url="/logout" logout-success-url="/" />
+
+        <security:csrf disabled="true"/>
+  </security:http>
+
+</beans>

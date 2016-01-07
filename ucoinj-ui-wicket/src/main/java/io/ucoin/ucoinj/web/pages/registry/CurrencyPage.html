@@ -1,0 +1,54 @@
+<!--
+  #%L
+  UCoin Java Client :: Web
+  %%
+  Copyright (C) 2014 - 2015 EIS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+<html xmlns:wicket="http://git-wip-us.apache.org/repos/asf/wicket/repo?p=wicket.git;a=blob_plain;f=wicket-core/src/main/resources/META-INF/wicket-1.5.xsd;hb=master">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+</head>
+<body>
+<wicket:extend>
+
+    <!-- header -->
+    <div data-role="header" data-position="fixed" data-add-back-btn="true" data-back-btn-text="Back"
+         data-theme="f" >
+        <h1>
+            <wicket:message key="currency.header"/>
+        </h1>
+    </div>
+
+
+        <!-- container -->
+        <div data-role="content" class="ui-content" data-theme="f">
+
+            <!-- currency_name -->
+            <div name="currency_name" id="currency_name" data-role="appery_label">
+                <label wicket:id="currencyName"/>
+            </div>
+
+            <!-- member_count -->
+            <div name="member_count" id="member_count" data-role="appery_label">
+                Label
+            </div>
+        </div>
+
+</wicket:extend>
+</body>
+</html>

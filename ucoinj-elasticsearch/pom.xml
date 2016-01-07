@@ -1,0 +1,275 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.ucoin</groupId>
+    <artifactId>ucoinj</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>io.ucoin</groupId>
+  <artifactId>ucoinj-elasticsearch</artifactId>
+  <packaging>jar</packaging>
+  <name>UCoin Java Client :: ElasticSearch Indexer</name>
+
+  <properties>
+    <!-- bundle configuration -->
+    <bundlePrefix>ucoinj-elasticsearch-${project.version}</bundlePrefix>
+
+    <!-- i18n configuration -->
+    <i18n.bundleOutputName>ucoinj-elasticsearch-i18n</i18n.bundleOutputName>
+    <i18n.generateCsvFile>true</i18n.generateCsvFile>
+    <i18n.bundleCsvFile>
+      ${maven.gen.dir}/resources/META-INF/${i18n.bundleOutputName}.csv
+    </i18n.bundleCsvFile>
+    <config.i18nBundleName>${i18n.bundleOutputName}</config.i18nBundleName>
+
+    <maven.jar.main.class>
+      io.ucoin.ucoinj.elasticsearch.Main
+    </maven.jar.main.class>
+
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>io.ucoin</groupId>
+      <artifactId>ucoinj-core-client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- LOGGING DEPENDENCIES - SLF4J -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+
+    <!-- Elastic Search -->
+    <dependency>
+      <groupId>org.elasticsearch</groupId>
+      <artifactId>elasticsearch</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <!-- JNA (need for OS shutdown hook) -->
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna-platform</artifactId>
+    </dependency>
+
+    <!-- Unit test -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/filtered-resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>*.config</include>
+          <include>*.properties</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <useUniqueVersions>false</useUniqueVersions>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>./lib/</classpathPrefix>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.nuiton.i18n</groupId>
+        <artifactId>i18n-maven-plugin</artifactId>
+
+        <executions>
+          <execution>
+            <id>scan-sources</id>
+            <configuration>
+              <entries>
+                <entry>
+                  <specificGoal>parserValidation</specificGoal>
+                  <basedir>${maven.src.dir}/main/java/</basedir>
+                  <includes>
+                    <param>**/**-validation.xml</param>
+                  </includes>
+                </entry>
+              </entries>
+            </configuration>
+            <goals>
+              <goal>parserJava</goal>
+              <goal>parserValidation</goal>
+              <goal>gen</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>make-bundle</id>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>default-bundle</id>
+      <activation>
+        <property>
+          <name>performRelease</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-dependencies</id>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <phase>prepare-package</phase>
+                <configuration>
+                  <overWriteReleases>false</overWriteReleases>
+                  <overWriteSnapshots>true</overWriteSnapshots>
+                  <overWriteIfNewer>true</overWriteIfNewer>
+                  <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                  <silent>true</silent>
+                  <includeScope>runtime</includeScope>
+                  <excludeScope>test</excludeScope>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>assembly-standalone</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <attach>true</attach>
+                  <finalName>${bundlePrefix}</finalName>
+                  <descriptors>
+                    <descriptor>
+                      src/main/assembly/standalone.xml
+                    </descriptor>
+                    <descriptor>
+                      src/main/assembly/i18n.xml
+                    </descriptor>
+                    <descriptor>
+                      src/main/assembly/help.xml
+                    </descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- use this profile to run the main class -->
+    <profile>
+      <id>run</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-run</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <phase>initialize</phase>
+                <configuration>
+                  <rules>
+                    <requireProperty>
+                      <property>maven.jar.main.class</property>
+                      <message>Could not find the "maven.jar.main.class"
+                        required property, use
+                        -Dmaven.jar.main.class=your.main.class.fqn
+                      </message>
+                    </requireProperty>
+                  </rules>
+                  <ignoreCache>true</ignoreCache>
+                  <failFast>true</failFast>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>run</id>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+                <phase>compile</phase>
+                <configuration>
+                  <mainClass>${exec.mainClass}</mainClass>
+                  <classpathScope>${exec.classpathScope}</classpathScope>
+                  <commandlineArgs>start</commandlineArgs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+      <properties>
+        <exec.mainClass>${maven.jar.main.class}</exec.mainClass>
+        <exec.classpathScope>runtime</exec.classpathScope>
+        <ucoinj.log.file>${project.build.directory}/exec.log</ucoinj.log.file>
+      </properties>
+    </profile>
+  </profiles>
+</project>

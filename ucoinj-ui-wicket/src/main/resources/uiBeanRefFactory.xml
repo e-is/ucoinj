@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  #%L
+  SIH-Adagio :: UI for Core Allegro
+  $Id:$
+  $HeadURL:$
+  %%
+  Copyright (C) 2012 - 2014 Ifremer
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  #L%
+  -->
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="
+     http://www.springframework.org/schema/beans 
+     http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+  <!-- Allow properties substitutions -->
+  <import resource="applicationContext-conf.xml" />
+
+  <bean id="beanRefFactory" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+    <constructor-arg>
+      <list>
+        <value>classpath:applicationContext-conf.xml</value>
+        <value>classpath:applicationContext-wicket.xml</value>
+        <value>classpath:applicationContext-security.xml</value>
+        <value>classpath:applicationContext-security-${ucoinj.security.type}.xml</value>
+      </list>
+    </constructor-arg>
+  </bean>
+</beans>

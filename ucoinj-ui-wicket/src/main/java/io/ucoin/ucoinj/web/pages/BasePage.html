@@ -1,0 +1,62 @@
+<!--
+  #%L
+  UCoin Java Client :: Web
+  %%
+  Copyright (C) 2014 - 2015 EIS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+<html xmlns:wicket="http://git-wip-us.apache.org/repos/asf/wicket/repo?p=wicket.git;a=blob_plain;f=wicket-core/src/main/resources/META-INF/wicket-1.5.xsd;hb=master">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta wicket:id="contentLanguage" http-equiv="Content-Language" content="">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="msapplication-tap-highlight" content="no">
+
+  <title wicket:id="pageTitle">uCoinj :: Web</title>
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <link type="text/css" rel="stylesheet" href="css/jquery-mobile/jquery.mobile-1.4.5.min.css">
+  <link type="text/css" rel="stylesheet" href="css/ucoinj/jquery.mobile.override.css">
+  <link type="text/css" rel="stylesheet" href="css/ucoinj/ucoinj.css"/>
+
+  <script src="js/jquery-2.1.4.min.js"></script>
+  <script src="js/jquery.mobile-1.4.5.min.js"></script>
+  <script src="js/scrypt-em.js"></script>
+  <script src="js/nacl_factory.js"></script>
+  <script src="js/base58.js"></script>
+  <script src="js/base64.js"></script>
+  <script src="js/ucoinj.js"></script>
+  <script src="js/app.js"></script>
+
+  <wicket:header-items/>
+
+</head>
+<body class="ui-mobile-viewport ui-overlay-a">
+    <div data-role="page" class="type-interior" data-theme="a">
+        <div wicket:id="feedback"></div>
+
+	    <wicket:child />
+
+        <div data-role="footer" data-position="fixed" data-theme="d">
+          <wicket:message key="base.footer"><span wicket:id="version">[version]</span></wicket:message>
+        </div>
+    </div>
+</body>
+</html>

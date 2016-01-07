@@ -20,14 +20,15 @@
     <file.encoding>UTF-8</file.encoding>
     <log4j.version>1.2.16</log4j.version>
     <slf4j.version>1.7.5</slf4j.version>
-    <guava.version>14.0.1</guava.version>
+    <guava.version>19.0</guava.version>
     <xalan.version>2.7.1</xalan.version>
     <xerces.version>2.9.0</xerces.version>
     <xml-apis.version>2.0.2</xml-apis.version>
     <gson.version>2.2.2</gson.version>
-    <kalium.version>0.3.1-SNAPSHOT</kalium.version>
+    <kalium.version>0.4.0</kalium.version>
     <scrypt.version>1.4.0</scrypt.version>
-    <elasticsearch.version>1.4.4</elasticsearch.version>
+    <elasticsearch.version>2.1.1</elasticsearch.version>
+    <jna.version>4.2.1</jna.version>
 
     <nuitonConfigVersion>3.0-rc-2</nuitonConfigVersion>
     <nuitonI18nVersion>3.3</nuitonI18nVersion>
@@ -36,6 +37,10 @@
     <wicket.version>7.0.0-M5</wicket.version>
     <wicketstuff.version>7.0.0-M5</wicketstuff.version>
     <jquery-ui.version>7.0.0-M5</jquery-ui.version>
+    <spring.version>4.2.1.RELEASE</spring.version>
+    <spring-security.version>4.0.2.RELEASE</spring-security.version>
+    <aspectj.version>1.8.7</aspectj.version>
+
 
     <yuicompressor-maven-plugin.version>1.3.0</yuicompressor-maven-plugin.version>
     <htmlcompressor-maven-plugin.version>1.3</htmlcompressor-maven-plugin.version>
@@ -60,6 +65,9 @@
     <goals>deploy</goals>
     <arguments></arguments>
     <preparationGoals>verify</preparationGoals>
+    <projectInfoReportsPluginVersion>2.7</projectInfoReportsPluginVersion>
+
+    <jarPluginVersion>2.5</jarPluginVersion>
 
     <locales>en,fr</locales>
 
@@ -86,8 +94,10 @@
   <inceptionYear>2014</inceptionYear>
 
   <modules>
-    <module>ucoinj-core</module>
-    <module>ucoinj-web</module>
+    <module>ucoinj-core-shared</module>
+    <module>ucoinj-core-client</module>
+    <module>ucoinj-elasticsearch</module>
+    <module>ucoinj-ui-wicket</module>
   </modules>
 
   <scm>
@@ -201,14 +211,51 @@
         <version>${wicket.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.wicketstuff</groupId>
-        <artifactId>wicketstuff-restannotations-json</artifactId>
-        <version>${wicketstuff.version}</version>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-core</artifactId>
+        <version>${spring-security.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.wicket</groupId>
-        <artifactId>wicket-spring-annot</artifactId>
-        <version>1.3.7</version>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-config</artifactId>
+        <version>${spring-security.version}</version>
+        <scope>compile</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.security</groupId>
+        <artifactId>spring-security-web</artifactId>
+        <version>${spring-security.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>${aspectj.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
@@ -290,11 +337,22 @@
         <artifactId>elasticsearch</artifactId>
         <version>${elasticsearch.version}</version>
       </dependency>
+      <!-- JNA (need for OS shutdown hook) -->
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna-platform</artifactId>
+        <version>${jna.version}</version>
+      </dependency>
 
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
-        <version>2.5.1</version>
+        <version>2.6.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -343,13 +401,18 @@
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
-          <version>1.2.1</version>
+          <version>1.3</version>
         </plugin>
 
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>license-maven-plugin</artifactId>
           <version>1.4</version>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>1.3.1</version>
         </plugin>
 
         <plugin>
@@ -376,8 +439,20 @@
         </plugin>
 
         <plugin>
+          <artifactId>maven-changes-plugin</artifactId>
+          <version>2.11</version>
+          <configuration>
+            <escapeHTML>false</escapeHTML>
+            <feedType>rss_2.0</feedType>
+            <issueLinkTemplatePerSystem>
+              <default>${project.url}/issues/%ISSUE%</default>
+            </issueLinkTemplatePerSystem>
+          </configuration>
+        </plugin>
+
+        <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
-          <!-- <version>3.0</version> -->
+          <version>3.2</version>
           <configuration>
             <source>1.7</source>
             <target>1.7</target>
@@ -397,14 +472,22 @@
 
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.2</version>
+          <version>${jarPluginVersion}</version>
+
           <configuration>
             <archive>
+              <!-- cela fait bugger le chargement des service via ServiceLoader donc on desactive -->
+              <!--index>true</index -->
               <manifest>
                 <!-- This is need to override the option version, in configuration classes -->
                 <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                 <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                <!-- Main class, configured in sub-modules -->
+                <mainClass>${maven.jar.main.class}</mainClass>
               </manifest>
+              <manifestEntries>
+                <url>${project.url}</url>
+              </manifestEntries>
             </archive>
           </configuration>
         </plugin>
@@ -447,6 +530,70 @@
   </distributionManagement>
 
   <profiles>
+
+    <!-- use this profile to run the main class -->
+    <profile>
+      <id>run</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+          <plugin>
+            <artifactId>maven-enforcer-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>check-run</id>
+                <goals>
+                  <goal>enforce</goal>
+                </goals>
+                <phase>initialize</phase>
+                <configuration>
+                  <rules>
+                    <requireProperty>
+                      <property>maven.jar.main.class</property>
+                      <message>Could not find the "maven.jar.main.class"
+                        required property, use
+                        -Dmaven.jar.main.class=your.main.class.fqn
+                      </message>
+                    </requireProperty>
+                  </rules>
+                  <ignoreCache>true</ignoreCache>
+                  <failFast>true</failFast>
+                  <fail>true</fail>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>run</id>
+                <goals>
+                  <goal>java</goal>
+                </goals>
+                <phase>compile</phase>
+                <configuration>
+                  <mainClass>${exec.mainClass}</mainClass>
+                  <classpathScope>${exec.classpathScope}</classpathScope>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+      <properties>
+        <exec.mainClass>${maven.jar.main.class}</exec.mainClass>
+        <exec.classpathScope>runtime</exec.classpathScope>
+        <adagio.log.file>${project.build.directory}/exec.log</adagio.log.file>
+      </properties>
+    </profile>
+
     <!-- perform only on a release stage when using the maven-release-plugin -->
     <profile>
       <id>license-profile</id>

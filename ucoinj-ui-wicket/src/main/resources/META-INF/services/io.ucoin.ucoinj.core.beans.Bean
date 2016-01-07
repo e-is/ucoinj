@@ -1,0 +1,14 @@
+io.ucoin.ucoinj.core.service.Ed25519CryptoServiceImpl
+io.ucoin.ucoinj.core.client.service.bma.BlockchainRemoteServiceImpl
+io.ucoin.ucoinj.core.client.service.bma.NetworkRemoteServiceImpl
+io.ucoin.ucoinj.core.client.service.bma.WotRemoteServiceImpl
+io.ucoin.ucoinj.core.client.service.bma.TransactionRemoteServiceImpl
+io.ucoin.ucoinj.core.client.service.HttpServiceImpl
+io.ucoin.ucoinj.core.client.service.DataContext
+io.ucoin.ucoinj.core.client.service.local.PeerServiceImpl
+io.ucoin.ucoinj.core.client.service.local.CurrencyServiceImpl
+io.ucoin.ucoinj.core.client.dao.mem.MemoryCurrencyDaoImpl
+io.ucoin.ucoinj.core.client.dao.mem.MemoryPeerDaoImpl
+io.ucoin.ucoinj.elasticsearch.service.ElasticSearchService
+io.ucoin.ucoinj.elasticsearch.service.CurrencyIndexerService
+io.ucoin.ucoinj.elasticsearch.service.BlockIndexerService

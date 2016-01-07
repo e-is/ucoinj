@@ -1,0 +1,92 @@
+/*
+ * #%L
+ * UCoin Java Client :: Web
+ * %%
+ * Copyright (C) 2014 - 2015 EIS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public 
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+@CHARSET "UTF-8";
+body {
+  margin: 0;
+}
+.ui-content {
+  padding: 0px;
+}
+
+.container {
+  background-image: url(images/search-background-large.jpg);
+  background-position: center center;
+  background-repeat: no-repeat;
+  padding: 1em;
+  @media (min-width: 1200px) {
+    width: 1170px;
+	min-height: 390px;
+  }
+  @media (min-width: 992px){
+    width: 970px;
+	min-height: 330px;
+  }
+  @media (min-width: 768px){
+    width: 750px;
+	min-height: 256px;
+  }
+}
+
+.container h2{
+     margin-bottom: 206px;
+	  @media (min-width: 1200px) {
+		margin-bottom: 206px;
+	  }
+	  @media (min-width: 992px){
+		margin-bottom: 165px;
+	  }
+	  @media (min-width: 768px){
+		margin-bottom: 128px;
+	  }
+}
+
+.resultContainer {
+	padding: 1em;
+}
+.inline-form {
+}
+
+.inline-form .wrapper {
+  float: left;
+  width: 100%;
+}
+
+.inline-form .wrapper .content {
+  margin: 0 120px 0 0;  /* 0 RC 0 LC */
+}
+.inline-form .right {
+  float: left;
+  width: 110px; /* RC */
+  margin-left: -110px; /* -RC */
+  margin-top: 2px;
+}
+
+.inline-form .footer{
+  clear: left;
+}
+
+.ui-autocomplete {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 20px;
+}
