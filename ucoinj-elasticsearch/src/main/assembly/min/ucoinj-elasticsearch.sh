@@ -25,7 +25,7 @@ if [ -d $JAVA_HOME ]; then
 	echo "launch java"
 	echo "java command: $JAVA_COMMAND"
 	
-	$JAVA_COMMAND $MEMORY $APP_JVM_OPTS -Ducoinj.log.file=$APP_LOG_FILE -jar ${project.build.finalName}.${project.packaging} $*
+	$JAVA_COMMAND $MEMORY $APP_JVM_OPTS -Ducoinj.log.file=$APP_LOG_FILE -Djna.nosys=true -jar ${project.build.finalName}.${project.packaging} $*
 	exitcode=$?
 	echo "Stop ${project.name} with exitcode: $exitcode"
 	exit $exitcode

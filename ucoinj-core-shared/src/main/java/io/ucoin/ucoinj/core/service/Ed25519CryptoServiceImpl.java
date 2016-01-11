@@ -24,7 +24,6 @@ package io.ucoin.ucoinj.core.service;
 
 
 import com.lambdaworks.crypto.SCrypt;
-import io.ucoin.ucoinj.core.beans.Bean;
 import io.ucoin.ucoinj.core.exception.TechnicalException;
 import io.ucoin.ucoinj.core.util.crypto.KeyPair;
 import jnr.ffi.byref.LongLongByReference;

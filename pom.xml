@@ -18,7 +18,7 @@
 
     <!-- Commons versions -->
     <file.encoding>UTF-8</file.encoding>
-    <log4j.version>1.2.16</log4j.version>
+    <log4j.version>1.2.17</log4j.version>
     <slf4j.version>1.7.5</slf4j.version>
     <guava.version>19.0</guava.version>
     <xalan.version>2.7.1</xalan.version>
@@ -28,7 +28,7 @@
     <kalium.version>0.4.0</kalium.version>
     <scrypt.version>1.4.0</scrypt.version>
     <elasticsearch.version>2.1.1</elasticsearch.version>
-    <jna.version>4.2.1</jna.version>
+    <jna.version>4.1.0</jna.version>
 
     <nuitonConfigVersion>3.0-rc-2</nuitonConfigVersion>
     <nuitonI18nVersion>3.3</nuitonI18nVersion>
