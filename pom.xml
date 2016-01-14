@@ -98,6 +98,7 @@
     <module>ucoinj-core-client</module>
     <module>ucoinj-elasticsearch</module>
     <module>ucoinj-ui-wicket</module>
+    <module>ucoinj-elasticsearch-plugin</module>
   </modules>
 
   <scm>
@@ -436,6 +437,11 @@
           <configuration>
             <autoVersionSubmodules>true</autoVersionSubmodules>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>2.5</version>
         </plugin>
 
         <plugin>
