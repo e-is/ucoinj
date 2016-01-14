@@ -11,6 +11,7 @@
 
     <artifactId>ucoinj-elasticsearch-plugin</artifactId>
 
+    <description>uCoinj :: ElasticSearch Plugin</description>
 
     <dependencies>
         <dependency>
@@ -21,6 +22,22 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/filtered-resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

@@ -67,19 +67,10 @@
     
     <!-- configuration file -->
     <fileSet>
-      <directory>target/classes</directory>
+      <directory>src/main/assembly/min</directory>
       <outputDirectory/>
       <includes>
         <include>ucoinj.config</include>
-      </includes>
-    </fileSet>
-    
-    <!-- diff -->
-    <fileSet>
-      <directory>target/classes/fr/ifremer/quadrige2/core/db/changelog</directory>
-      <outputDirectory>changelog</outputDirectory>
-      <includes>
-        <include>**/*.*</include>
       </includes>
     </fileSet>
 
