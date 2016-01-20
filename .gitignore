@@ -7,3 +7,5 @@ ucoinj-core/.settings
 ucoinj-core/*.log
 ucoinj-cesium/src/cesium/**/*.*
 */*.iml
+target
+*/target
