@@ -2,8 +2,8 @@
 ucoinj-core/.project
 ucoinj-core/.classpath
 .project
-ucoinj-core/.settings/org.eclipse.core.resources.prefs
-ucoinj-core/.settings/org.eclipse.jdt.core.prefs
-ucoinj-core/.settings/org.eclipse.m2e.core.prefs
-
-ucoinj-core/ucoin-client.log
+.idea
+ucoinj-core/.settings
+ucoinj-core/*.log
+ucoinj-cesium/src/cesium/**/*.*
+*/*.iml

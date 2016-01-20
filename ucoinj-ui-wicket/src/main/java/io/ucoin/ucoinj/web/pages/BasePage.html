@@ -21,6 +21,8 @@
   -->
 <html xmlns:wicket="http://git-wip-us.apache.org/repos/asf/wicket/repo?p=wicket.git;a=blob_plain;f=wicket-core/src/main/resources/META-INF/wicket-1.5.xsd;hb=master">
 <head>
+  <title wicket:id="pageTitle">uCoinj :: Web</title>
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta wicket:id="contentLanguage" http-equiv="Content-Language" content="">
   <meta name="format-detection" content="telephone=no">
@@ -28,8 +30,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="msapplication-tap-highlight" content="no">
+  <meta charset=utf-8 />
 
-  <title wicket:id="pageTitle">uCoinj :: Web</title>
   <link rel="shortcut icon" href="favicon.ico">
 
   <link type="text/css" rel="stylesheet" href="css/jquery-mobile/jquery.mobile-1.4.5.min.css">
@@ -49,13 +51,19 @@
 
 </head>
 <body class="ui-mobile-viewport ui-overlay-a">
-    <div data-role="page" class="type-interior" data-theme="a">
+    <div data-role="page" data-theme="a">
         <div wicket:id="feedback"></div>
 
-	    <wicket:child />
+        <div role="main" class="ui-content">
+	        <wicket:child />
+        </div>
 
         <div data-role="footer" data-position="fixed" data-theme="d">
-          <wicket:message key="base.footer"><span wicket:id="version">[version]</span></wicket:message>
+            <!-- TODO fix this (bad URL when in /currency/metab_brouzouf)
+            <wicket:link>
+                <a href="home/HomePage.html" data-icon="home" class="ui-btn-right"><wicket:message key="base.homeLink">[home]</wicket:message></a>
+            </wicket:link>-->
+            <h1><wicket:message key="base.footer"><span wicket:id="version">[version]</span></wicket:message></h1>
         </div>
     </div>
 </body>

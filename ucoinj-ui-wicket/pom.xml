@@ -287,7 +287,7 @@
             <configuration>
               <war>target/${project.parent.artifactId}-${project.version}.war</war>
               <!-- required to run jetty:stop goal -->
-              <stopPort>9696</stopPort>
+              <stopPort>9796</stopPort>
               <stopKey>ucoinj</stopKey>
               <systemProperties>
                 <systemProperty>
